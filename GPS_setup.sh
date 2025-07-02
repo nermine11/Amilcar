@@ -3,28 +3,9 @@
 #Update rPi and install packages
 sudo apt update
 sudo apt upgrade
+# this isn't really necessary, maybe if you have a brand new pi
+# sudo rpi-update
 sudo apt install pps-tools gpsd gpsd-clients chrony
-
-
-#Set up the Pi to release the console pins
-#ree the UART port (in our case /dev/ttyS0) for GPS communication,
-sudo raspi-config nonint do_serial_cons 1
-sudo reboot
-
-#Edit /etc/default/gpsd:
-
-#Installing a GPS Daemon (gpsd)
-#serial might be /dev/ttyAMA0
-sudo bash -c "echo 'DEVICES=\"/dev/ttyS0 /dev/pps0\"' >> /etc/default/gpsd"
-
-# -n means start without a client connection (i.e. at boot)
-sudo bash -c "echo 'GPSD_OPTIONS=\"-n\"' >> /etc/default/gpsd"
-
-# also start in general
-sudo bash -c "echo 'START_DAEMON=\"true\"' >> /etc/default/gpsd"
-
-# Automatically hot add/remove USB GPS devices via gpsdctl
-sudo bash -c "echo 'USBAUTO=\"true\"' >> /etc/default/gpsd"
 
 #Enable PPS
 sudo bash -c "echo '# the next 3 lines are for GPS PPS signals' >> /boot/firmware/config.txt"
@@ -39,8 +20,24 @@ sudo bash -c "echo 'init_uart_baud=9600' >> /boot/firmware/config.txt"
 sudo bash -c "echo 'pps-gpio' >> /etc/modules"
 sudo reboot
 
-#configure chrony to use both NMEA and PPS signals
+#Edit /etc/default/gpsd:
+#Installing a GPS Daemon (gpsd)
+#serial might be /dev/ttyAMA0
+sudo bash -c "echo 'DEVICES=\"/dev/ttyS0 /dev/pps0\"' >> /etc/default/gpsd"
+# -n means start without a client connection (i.e. at boot)
+sudo bash -c "echo 'GPSD_OPTIONS=\"-n\"' >> /etc/default/gpsd"
+# also start in general
+sudo bash -c "echo 'START_DAEMON=\"true\"' >> /etc/default/gpsd"
+# Automatically hot add/remove USB GPS devices via gpsdctl
+sudo bash -c "echo 'USBAUTO=\"true\"' >> /etc/default/gpsd"
+sudo reboot
 
+#Set up the Pi to release the console pins
+#ree the UART port (in our case /dev/ttyS0) for GPS communication,
+sudo raspi-config nonint do_serial_cons 1
+sudo reboot
+
+#configure chrony to use both NMEA and PPS signals
 # SHM refclock is shared memory driver, it is populated by GPSd and read by chrony
 # it is SHM 0
 # refid is what we want to call this source = NMEA
