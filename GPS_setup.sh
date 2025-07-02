@@ -15,16 +15,16 @@ sudo reboot
 
 #Installing a GPS Daemon (gpsd)
 #serial might be /dev/ttyAMA0
-sudo bash -c "echo 'DEVICES="/dev/ttyS0 /dev/pps0"'>>/etc/default/gpsd"
+sudo bash -c "echo 'DEVICES=\"/dev/ttyS0 /dev/pps0\"' >> /etc/default/gpsd"
 
 # -n means start without a client connection (i.e. at boot)
-sudo bash -c "echo 'GPSD_OPTIONS="-n"'>>/etc/default/gpsd"
+sudo bash -c "echo 'GPSD_OPTIONS=\"-n\"' >> /etc/default/gpsd"
 
 # also start in general
-sudo bash -c "echo 'START_DAEMON="true"'>>/etc/default/gpsd"
+sudo bash -c "echo 'START_DAEMON=\"true\"' >> /etc/default/gpsd"
 
 # Automatically hot add/remove USB GPS devices via gpsdctl
-sudo bash -c "echo 'USBAUTO="true"'>>/etc/default/gpsd"
+sudo bash -c "echo 'USBAUTO=\"true\"' >> /etc/default/gpsd"
 
 #Enable PPS
 sudo bash -c "echo '# the next 3 lines are for GPS PPS signals' >> /boot/firmware/config.txt"
