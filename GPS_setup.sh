@@ -61,12 +61,5 @@ sudo bash -c "echo 'refclock PPS /dev/pps0 refid PPS lock NMEA offset 0.0 poll 3
 # also enable logging by uncommenting the logging line
 sudo bash -c "echo 'log tracking measurements statistics'>>/etc/chrony/chrony.conf"
 
-#to see
-# Disable network time sources (critical for GPS sync)
-sudo sed -i '/ntp-servers/d' /etc/dhcpcd.conf  # Remove from DHCP requests
-sudo timedatectl set-ntp 0                     # Disable systemd-timesyncd
-sudo systemctl disable systemd-timesyncd --now # Stop service immediately
-sudo systemctl restart dhcpcd                  # Apply DHCP changes
-
 #Restart chrony
 sudo systemctl restart chrony
