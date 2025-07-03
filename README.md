@@ -56,6 +56,11 @@ Median Estimated Offset by IP:
 NMEA: 4.26e-01
 ```
 So in our case, we take the value in the middle:
-4.245
-
+4.245 
+we modify it in /etc/chrony/chrony.conf
+```
+sudo nano /etc/chrony/chrony.conf
+"modify: refclock SHM 0 refid NMEA offset 4.245 precision 1e-3 poll 0 filter 3
+sudo systemctl restart chrony
+```
 To understand more, follow this tutorial we used: https://austinsnerdythings.com/2025/02/14/revisiting-microsecond-accurate-ntp-for-raspberry-pi-with-gps-pps-in-2025/
