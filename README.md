@@ -32,7 +32,7 @@ $PGTOP,11,3*6F
 We are using the external GPS antenna for better results
 
 **Setting the SHM offset**
-
+the SHM offset is a fixed time correction (in seconds) that tells Chrony to add or subtract from the GPS’s time signal to make it accurate and to compensate for the delay of messages 
 Initially in GPS_setup.sh, the offset is 0 but we have to change it for better results.
 
 For that we use statistics, after an hour or more of running chronny, run this command
