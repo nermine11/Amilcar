@@ -1,14 +1,14 @@
 # Amilcar
 
-This setup is to be run on Rasbperry Pi to set its internal time to GPS time,
-and to record audi files with timestamps using a hydrophone
+This setup is to be run on Rasbperry Pi 5 to set its internal time to GPS time,
+and to record audio files with timestamps using a hydrophone.
 It is part of Falco/OpenSwarm collabration to count the number of motor boats in marine protected areas
 
 **Equipment:**
 - rPi 5 for better time accuracy
 - Adafuit ultimate GPS HAT
--  GPS antenna
--  hydrohpne
+-  GPS antenna for better time accuracy
+-  hydrophone
 -  ADC/DAC pro
 
   To set the internal time of the rPi as GPS time, run GPS_setup.sh
@@ -18,9 +18,9 @@ It is part of Falco/OpenSwarm collabration to count the number of motor boats in
  ```
 **To know which GPS antenna you are using**
 
-external : 3
+external : **,3
 
-internal : 2
+internal : **,2
  ```
 gpsctl -x '$PGCMD,33,1*6C' /dev/ttyS0
 /dev/ttyS0 identified as a MTK-3301 AXN_2.31_3339_13101700-5632 at 9600 baud.
