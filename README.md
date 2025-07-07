@@ -65,7 +65,7 @@ sudo chmod +x /usr/local/bin/RTC_GPS_sync.sh
 sudo nano /etc/systemd/system/rtc-gps-sync.service
 ```
 
-***Paste the following content:***
+**Paste the following content:**
 ```
 [Unit]
 Description= RTC fallback
@@ -80,17 +80,17 @@ RestartSec=1
 [Install]
 WantedBy=multi-user.target
 ```
-***save and exit***
+**save and exit**
 
-***Reload the service files to include the new service.***
+**Reload the service files to include the new service.**
 ```
 sudo systemctl daemon-reload
 ```
-***Start and enable the service:***
+**Start and enable the service:**
 ```
 systemctl start RTC_GPS_sync.service
 ```
-***And automatically get it to start on boot:***
+**And automatically get it to start on boot:**
 ```
 systemctl enable RTC_GPS_sync.service
 ```
