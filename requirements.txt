@@ -1,0 +1,6 @@
+numpy
+sounddevice
+pandas
+python3-smbus 
+i2c-tools
+libportaudio2
