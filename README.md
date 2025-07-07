@@ -1,66 +1,96 @@
 # Amilcar
 
-This setup is to be run on Rasbperry Pi 5 to set its internal time to GPS time,
-and to record audio files with timestamps using a hydrophone.
-It is part of Falco/OpenSwarm collabration to count the number of motor boats in marine protected areas
+This setup is designed to run on a Raspberry Pi, synchronizing its internal clock with GPS time and recording audio- files with timestamps of each second using a hydrophone.
+It is part of **Falco/OpenSwarm** collabration to count the number of motor boats in marine protected areas
 
-**Equipment:**
-- rPi 5 for better time accuracy
-- Adafuit ultimate GPS HAT
+NOTE: The this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
+
+## Hardware requirements
+-  Raspberry Pi
+-  Adafuit ultimate GPS HAT
 -  GPS antenna for better time accuracy
--  hydrophone
+-  Hydrophone
 -  ADC/DAC pro
+-  Adafruit DS3231 RTC
 
-  To set the internal time of the rPi as GPS time, run GPS_setup.sh
+We are using GPS to set the internal time of the rPi, and using RTC as fallback in case we lose GPS fix.
+
+The RTC is disciplined by GPS every second.
+
+## Configuring AMILCAR
+
+### Step 1: Flash Operating System to the micro-SD card
+
+Depending on your computer operating system, the installation procedure can change. 
+Please follow the instruction on the Raspbian website: https://www.raspberrypi.com/software/
+
+From the link above download and install the Raspberry Pi Imager.
+
+In the Raspberry Pi Imager select:
+- Device           - Raspberry Pi 4,  
+- Operating System - Raspberry Pi OS (64-BIT)
+- Storage          - micro-SD card
+
+After flashing, insert the micro-SD into the Raspberry Pi. 
+Power ON the Raspberry and connect it to a screen with an HDMI cable, and connect a mouse and a keyboard.
+
+On the first boot of the OS you need to fill in the location and language info, username and password.
+
+For the username type: `pi`
+For the password type: `raspberry`
+### Step 2: Set the internal time of the rPi as GPS time, 
+***Run GPS_setup.sh***
   ```
- chmod +x GPS_setup.sh
- ./GPS_setup.sh
+ chmod +x home/pi/GPS/GPS_setup.sh
+ /home/pi/GPS/GPS_setup.sh
  ```
-**To know which GPS antenna you are using**
-
-external : **,3
-
-internal : **,2
- ```
-gpsctl -x '$PGCMD,33,1*6C' /dev/ttyS0
-/dev/ttyS0 identified as a MTK-3301 AXN_2.31_3339_13101700-5632 at 9600 baud.
-pi@raspberrypi:~ $ gpspipe -r | grep PGTOP
-$PGTOP,11,3*6F
-$PGTOP,11,3*6F
-$PGTOP,11,3*6F
- ```
-We are using the external GPS antenna for better results
-
-**Setting the SHM offset**
-the SHM offset is a fixed time correction (in seconds) that tells Chrony to add or subtract from the GPS’s time signal to make it accurate and to compensate for the delay of messages 
-Initially in GPS_setup.sh, the offset is 0 but we have to change it for better results.
-
-For that we use statistics, after an hour or more of running chronny, run this command
+### Step 3: Setup the RTC 
+***Run RTC_setup.sh***
 ```
-sudo cat /var/log/chrony/statistics.log > GPS_statistics/chrony_statistics.log #keep the last ~100 lines only
-python 3 GPS_statistics/statistics.py
+chmod +x home/pi/Amilcar/RTC/RTC_setup.sh
+/home/pi/Amilcar/RTC/RTC_setup.sh
 ```
-We get for example:
+### Step 4: Discipline the RTC using GPS and use RTC as fallback 
+***Move RTC_GPS_sync.sh***
 ```
-chrony Statistics Summary:
-------------------------------
-Number of IP Addresses: 22
-Time Range: 2025-06-30 12:04:15 to 2025-07-02 14:11:37
+sudo mv /home/pi/Ar/RTC/RTC_GPS_sync.sh /usr/local/bin/RTC_GPS_sync.sh
+```
+**Make  the file RTC_GPS_sync.sh executable**
+```
+sudo chmod +x /usr/local/bin/RTC_GPS_sync.sh
 
-Average Estimated Offset by IP:
-
-NMEA: 4.23e-01
-
-Median Estimated Offset by IP:
-
-NMEA: 4.26e-01
 ```
-So in our case, we take the value in the middle:
-4.245 
-we modify it in /etc/chrony/chrony.conf
+**Create a systemd Service File**
 ```
-sudo nano /etc/chrony/chrony.conf
-"modify: refclock SHM 0 refid NMEA offset 4.245 precision 1e-3 poll 0 filter 3
-sudo systemctl restart chrony
+sudo nano /etc/systemd/system/rtc-gps-sync.service
 ```
-To understand more, follow this tutorial we used: https://austinsnerdythings.com/2025/02/14/revisiting-microsecond-accurate-ntp-for-raspberry-pi-with-gps-pps-in-2025/
+
+***Paste the following content:***
+```
+[Unit]
+Description= RTC fallback
+After=network.target gpsd.service
+Wants=gpsd.service
+
+[Service]
+ExecStart=/usr/local/bin/RTC_GPS_sync.sh
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
+```
+***save and exit***
+
+***Reload the service files to include the new service.***
+```
+sudo systemctl daemon-reload
+```
+***Start and enable the service:***
+```
+systemctl start RTC_GPS_sync.service
+```
+***And automatically get it to start on boot:***
+```
+systemctl enable RTC_GPS_sync.service
+```
