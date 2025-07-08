@@ -18,10 +18,12 @@ echo '# the next 3 lines are for GPS PPS signals' | sudo tee -a /boot/firmware/c
 grep -qxF 'dtoverlay=pps-gpio,gpiopin=4' /boot/firmware/config.txt || \
 echo 'dtoverlay=pps-gpio,gpiopin=4' | sudo tee -a /boot/firmware/config.txt > /dev/null
 # Enable the UART serial interface hardware to communicate with the GPS module
-grep -qxF 'enable_uart=1' /boot/firmware/config.txt || \
+grep -q '^enable_uart=' /boot/firmware/config.txt && \
+sudo sed -i 's|^enable_uart=.*|enable_uart=1|' /boot/firmware/config.txt || \
 echo 'enable_uart=1' | sudo tee -a /boot/firmware/config.txt > /dev/null
 # Set default serial communication speed to 9600 baud to matches our GPS module
-grep -qxF 'init_uart_baud=9600' /boot/firmware/config.txt || \
+grep -q '^init_uart_baud=' /boot/firmware/config.txt && \
+sudo sed -i 's|^init_uart_baud=.*|init_uart_baud=9600|' /boot/firmware/config.txt || \
 echo 'init_uart_baud=9600' | sudo tee -a /boot/firmware/config.txt > /dev/null
 
 #In /etc/modules, add ‘pps-gpio’ to a new line.
@@ -31,19 +33,25 @@ echo 'pps-gpio' | sudo tee -a /etc/modules > /dev/null
 #Edit /etc/default/gpsd:
 #Installing a GPS Daemon (gpsd)
 #serial might be /dev/ttyAMA0
-#comment these two lines
-sudo sed -i 's|^DEVICES=""|#DEVICES=""|; s|^GPSD_OPTIONS=""|#GPSD_OPTIONS=""|' /etc/default/gpsd
-grep -qxF 'DEVICES="/dev/ttyS0 /dev/pps0"' /etc/default/gpsd || \
+sudo sed -i 's|^DEVICES=""|#DEVICES=""|' /etc/default/gpsd
+grep -q '^DEVICES=' /etc/default/gpsd && \
+sudo sed -i 's|^DEVICES=.*|DEVICES="/dev/ttyS0 /dev/pps0"|' /etc/default/gpsd || \
 echo 'DEVICES="/dev/ttyS0 /dev/pps0"' | sudo tee -a /etc/default/gpsd > /dev/null
 # -n means start without a client connection (i.e. at boot)
-grep -qxF 'GPSD_OPTIONS="-n"' /etc/default/gpsd || \
+grep -q '^GPSD_OPTIONS=' /etc/default/gpsd && \
+sudo sed -i 's|^GPSD_OPTIONS=.*|GPSD_OPTIONS="-n"|' /etc/default/gpsd || \
 echo 'GPSD_OPTIONS="-n"' | sudo tee -a /etc/default/gpsd > /dev/null
+
 # also start in general
-grep -qxF 'START_DAEMON="true"' /etc/default/gpsd || \
+grep -q '^START_DAEMON=' /etc/default/gpsd && \
+sudo sed -i 's|^START_DAEMON=.*|START_DAEMON="true"|' /etc/default/gpsd || \
 echo 'START_DAEMON="true"' | sudo tee -a /etc/default/gpsd > /dev/null
+
 # Automatically hot add/remove USB GPS devices via gpsdctl
-sudo sed -i '/^USBAUTO=/d' /etc/default/gpsd
+grep -q '^USBAUTO=' /etc/default/gpsd && \
+sudo sed -i 's|^USBAUTO=.*|USBAUTO="false"|' /etc/default/gpsd || \
 echo 'USBAUTO="false"' | sudo tee -a /etc/default/gpsd > /dev/null
+
 
 #configure chrony to use both NMEA and PPS signals
 # SHM refclock is shared memory driver, it is populated by GPSd and read by chrony
@@ -53,7 +61,8 @@ echo 'USBAUTO="false"' | sudo tee -a /etc/default/gpsd > /dev/null
 # precision is how precise this is. not 1e-3 = 1 millisecond, so not very precision
 # poll 0 means poll every 2^0 seconds = 1 second poll interval
 # filter 3 means take the average/median (forget which) of the 3 most recent readings. NMEA can be jumpy so we're averaging here
-grep -qxF 'refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 prefer' /etc/chrony/chrony.conf || \
+grep -q '^refclock SHM 0 refid NMEA' /etc/chrony/chrony.conf && \
+sudo sed -i '/^refclock SHM 0 refid NMEA/ c\refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 prefer' /etc/chrony/chrony.conf || \
 echo 'refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 prefer' | sudo tee -a /etc/chrony/chrony.conf > /dev/null
 
 # PPS refclock is PPS specific, with /dev/pps0 being the source
@@ -62,8 +71,9 @@ echo 'refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 pref
 # offset = 0.0 means no offset... this should probably always remain 0
 # poll 3 = poll every 2^3=8 seconds. polling more frequently isn't necessarily better
 # trust means we trust this time. the NMEA will be kicked out as false ticker eventually, so we need to trust the combo
-grep -qxF 'refclock PPS /dev/pps0 refid PPS lock NMEA offset 0.0 poll 3 trust' /etc/chrony/chrony.conf || \
-echo 'refclock PPS /dev/pps0 refid PPS lock NMEA offset 0.0 poll 3 trust prefer' | sudo tee -a /etc/chrony/chrony.conf > /dev/null
+grep -q '^refclock PPS /dev/pps0 refid PPS' /etc/chrony/chrony.conf && \
+sudo sed -i '/^refclock PPS \/dev\/pps0 refid PPS/ c\refclock PPS /dev/pps0 refid PPS lock NMEA offset 0.0 poll 3 trust' /etc/chrony/chrony.conf || \
+echo 'refclock PPS /dev/pps0 refid PPS lock NMEA offset 0.0 poll 3 trust' | sudo tee -a /etc/chrony/chrony.conf > /dev/null
 
 # also enable logging by uncommenting the logging line
 grep -qxF 'log tracking measurements statistics' /etc/chrony/chrony.conf || \
