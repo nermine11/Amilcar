@@ -38,11 +38,12 @@ On the first boot of the OS you need to fill in the location and language info, 
 
 For the username type: `pi`
 For the password type: `raspberry`
+Open terminal in Amilcar folder
 ### Step 2: Set the internal time of the rPi as GPS time, 
 ***Run GPS_setup.sh***
   ```
- chmod +x home/pi/GPS/GPS_setup.sh
- /home/pi/GPS/GPS_setup.sh
+ chmod +x ~/GPS/GPS_setup.sh
+ ./GPS/GPS_setup.sh
  ```
 ### Step 3: Setup the RTC 
 ***Run RTC_setup.sh***
