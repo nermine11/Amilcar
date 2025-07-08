@@ -62,8 +62,8 @@ echo 'USBAUTO="false"' | sudo tee -a /etc/default/gpsd > /dev/null
 # poll 0 means poll every 2^0 seconds = 1 second poll interval
 # filter 3 means take the average/median (forget which) of the 3 most recent readings. NMEA can be jumpy so we're averaging here
 grep -q '^refclock SHM 0 refid NMEA' /etc/chrony/chrony.conf && \
-sudo sed -i '/^refclock SHM 0 refid NMEA/ c\refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 prefer' /etc/chrony/chrony.conf || \
-echo 'refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 prefer' | sudo tee -a /etc/chrony/chrony.conf > /dev/null
+sudo sed -i '/^refclock SHM 0 refid NMEA/ c\refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3' /etc/chrony/chrony.conf || \
+echo 'refclock SHM 0 refid NMEA offset 0.000 precision 1e-3 poll 0 filter 3 ' | sudo tee -a /etc/chrony/chrony.conf > /dev/null
 
 # PPS refclock is PPS specific, with /dev/pps0 being the source
 # refid PPS means call it the PPS source
