@@ -1,5 +1,5 @@
-sudo bash -c "echo '#added for RTC support' >> /boot/firmware/config.txt"
-sudo bash -c "echo 'dtoverlay=i2c-rtc,ds3231' >> /boot/firmware/config.txt"
+sudo bash -c "echo '#added to charge the RTC battery' >> /boot/firmware/config.txt"
+sudo bash -c "echo 'dtparam=rtc_bbat_vchg=3000000 >> /boot/firmware/config.txt"
 sudo reboot
 
 #Disable the "fake hwclock" which interferes with the 'real' hwclock
