@@ -46,6 +46,10 @@ For the password type: `raspberry`
  sudo chmod +x GPS/GPS_setup.sh
  ./GPS/GPS_setup.sh
  ```
+-> Comment manually
+whats under use debian vendor zone
+use time sources from dhcp
+use ntp sources found in etc/chrony/sources.d
 ### Step 3: Setup the RTC 
 ***Run RTC_setup.sh***
 ```
