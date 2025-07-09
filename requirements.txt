@@ -1,5 +1,6 @@
+matplotlib
+pandas
 numpy
 sounddevice
-pandas
 smbus2
 soundfile
