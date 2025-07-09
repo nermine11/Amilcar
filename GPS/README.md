@@ -20,8 +20,8 @@ Initially in GPS_setup.sh, the offset is 0 but we have to change it for better r
 
 For that we use statistics, after an hour or more of running chronny, run this command
 ```
-sudo cat /var/log/chrony/statistics.log > GPS_statistics/chrony_statistics.log #keep the last ~100 lines only
-python 3 GPS_statistics/statistics.py
+sudo cat /var/log/chrony/statistics.log > GPS/GPS_statistics/chrony_statistics.log #keep the last ~100 lines only
+python 3 GPS/GPS_statistics/statistics.py
 ```
 We get for example:
 ```
