@@ -42,9 +42,13 @@ For the password type: `raspberry`
 ### Step 2: Download and install Amilcar 
 From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
-Unzip the content of the release in the /home/pi/Amilcar folder and run the following command:
+Unzip the content of the release in the /home/pi/Amilcar folder and run the following commands:
 
-`source install_amilcar.sh`
+```
+source install_amilcar.sh
+sudo apt install i2c-tools
+sudo apt install libportaudio2
+```
 
 Reboot the Raspberry.
 
