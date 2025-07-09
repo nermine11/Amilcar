@@ -1,5 +1,5 @@
 numpy
 sounddevice
 pandas
-python3-smbus 
+smbus2
 soundfile
