@@ -3,10 +3,10 @@
 This setup is designed to run on a Raspberry Pi, synchronizing its internal clock with GPS time and recording audio- files with timestamps of each second using a hydrophone.
 It is part of **Falco/OpenSwarm** collabration to count the number of motor boats in marine protected areas
 
-NOTE: The this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
+NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
 ## Hardware requirements
--  Raspberry Pi
+-  Raspberry Pi 5 for better time precision
 -  Adafuit ultimate GPS HAT
 -  GPS antenna for better time accuracy
 -  Hydrophone
@@ -27,7 +27,7 @@ Please follow the instruction on the Raspbian website: https://www.raspberrypi.c
 From the link above download and install the Raspberry Pi Imager.
 
 In the Raspberry Pi Imager select:
-- Device           - Raspberry Pi 4,  
+- Device           - Raspberry Pi 5,  
 - Operating System - Raspberry Pi OS (64-BIT)
 - Storage          - micro-SD card
 
@@ -39,24 +39,35 @@ On the first boot of the OS you need to fill in the location and language info, 
 For the username type: `pi`
 For the password type: `raspberry`
 
-***Open terminal in Amilcar folder***
-### Step 2: Set the internal time of the rPi as GPS time, 
+### Step 2: Download and install Amilcar 
+From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
+
+Unzip the content of the release in the /home/pi/Amilcar folder and run the following command:
+
+`source install_amilcar.sh`
+
+Reboot the Raspberry.
+
+### Step 3: Set the internal time of the rPi as GPS time, 
 ***Run GPS_setup.sh***
   ```
  sudo chmod +x GPS/GPS_setup.sh
  ./GPS/GPS_setup.sh
  ```
--> Comment manually
-whats under use debian vendor zone
-use time sources from dhcp
-use ntp sources found in etc/chrony/sources.d
-### Step 3: Setup the RTC 
+Comment manually the content of 
+- #debian vendor zone
+- #use time sources from dhcp
+- #use ntp sources found in etc/chrony/sources.d
+  
+  to not use Interent time servers
+  
+### Step 4: Setup the RTC 
 ***Run RTC_setup.sh***
 ```
  sudo chmod +x RTC/RTC_setup.sh
 ./RTC/RTC_setup.sh
 ```
-### Step 4: Discipline the RTC using GPS and use RTC as fallback 
+### Step 5: Discipline the RTC using GPS and use RTC as fallback 
 ***Move RTC_GPS_sync.sh***
 ```
 sudo mv RTC/RTC_GPS_sync.sh /usr/local/bin/RTC_GPS_sync.sh
