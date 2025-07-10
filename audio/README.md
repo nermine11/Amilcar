@@ -1,4 +1,4 @@
-We use hifiberry DAC + ADC PRO tp convert the analog signals from the hydrophone into digital signals since Raspberry Pi can't do that on its own.
+We use hifiberry DAC + ADC PRO to convert the analog signals from the hydrophone into digital signals since Raspberry Pi can't do that on its own.
 
 Documentation: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
