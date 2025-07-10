@@ -13,7 +13,6 @@ WAV_FILE = os.path.join(OUTPUT_DIR, "recording.wav")
 JSON_FILE = os.path.join(OUTPUT_DIR, "timestamps.json")
 # create output directory
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-print("o")
 def initialize_gps():
     try:
         gpsd.connect()
@@ -71,7 +70,7 @@ if __name__ == '__main__':
             #get time
             now = datetime.now(timezone.utc)
             #get location
-            if(initialize_gps):
+            if initialize_gps():
                 gps_data = get_gps_data
             else:
                 gps_data = None    

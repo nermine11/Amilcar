@@ -2,7 +2,17 @@
   "samplerate": 48000,
   "timestamps": [
     {
-      "iso_time": "2025-07-10T15:05:17.004938+00:00",
-      "gps_time": 1752159917.004938,
+      "iso_time": "2025-07-10T15:12:32.453741+00:00",
+      "gps_time": 1752160352.453741,
       "sample_offset": 0,
-      "location": 
+      "location": null
+    },
+    {
+      "iso_time": "2025-07-10T15:12:33.487302+00:00",
+      "gps_time": 1752160353.487302,
+      "sample_offset": 48000,
+      "location": null
+    }
+  ],
+  "total_samples": 96000
+}
