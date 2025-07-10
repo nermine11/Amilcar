@@ -24,10 +24,3 @@ running
 ```
 sudo bash -c "echo 'force_eeprom_read=0' >> /boot/firmware/config.txt"
 ```
-**Setting the correct input amplifier settings for a microphone**
-By default, the input sensitivity is matched for line-level audio sources like the audio output of your mobile phone, CD player or Amazon Alexa. This is doing via a jumper on the J1 header.
-![image](https://github.com/user-attachments/assets/e63ad206-be5b-49fc-85ec-c4929966a093)
-
-To use the hydrophone, the jumper needs to be set differently as shown in the following picture. Otherwise, the volume would be very low.
-
-![image](https://github.com/user-attachments/assets/529c58cb-cded-4cf4-95a6-8b773b6bd535)
