@@ -33,13 +33,15 @@ def get_gps_data():
                 "speed": packet.hspeed,
                 "track": packet.track,
                 "mode": packet.mode,
-                "sats": packet.sats
             }
         return None
     except Exception as e:
-        print(f"GPS error: {e}")
-        return None
-
+        print(f"GPSD error: {e}")
+        try:
+            gpsd.connect()
+        except:
+            pass
+    return None
 if __name__ == '__main__':
     # create WAV file in write only mode
     wav = wave.open(WAV_FILE, 'wb')
@@ -57,7 +59,7 @@ if __name__ == '__main__':
     # === RECORDING LOOP ===
     print(" Recording")
     samples_recorded = 0
-
+    initialize_gps() 
     try:
         while True:
             # record 1 second of audio or float24 to see
@@ -70,10 +72,7 @@ if __name__ == '__main__':
             #get time
             now = datetime.now(timezone.utc)
             #get location
-            if initialize_gps():
-                gps_data = get_gps_data()
-            else:
-                gps_data = None    
+            gps_data = get_gps_data()   
             #log timestamps and location
             log["timestamps"].append({
                 "iso_time": now.isoformat(),
