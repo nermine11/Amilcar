@@ -2,8 +2,6 @@ We use hifiberry DAC + ADC PRO tp convert the analog signals from the hydrophone
 
 Documentation: https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
-https://www.hifiberry.com/docs/hardware/using-dynamic-microphones-with-the-dac-adc/
-
 You will need an updated Linux kernel. You will need at least version 4.18.12. You can check this using the command uname
 ```
 # uname -a
