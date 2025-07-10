@@ -71,7 +71,7 @@ if __name__ == '__main__':
             now = datetime.now(timezone.utc)
             #get location
             if initialize_gps():
-                gps_data = get_gps_data
+                gps_data = get_gps_data()
             else:
                 gps_data = None    
             #log timestamps and location
