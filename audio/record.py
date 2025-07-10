@@ -13,7 +13,7 @@ WAV_FILE = os.path.join(OUTPUT_DIR, "recording.wav")
 JSON_FILE = os.path.join(OUTPUT_DIR, "timestamps.json")
 # create output directory
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-
+print("o")
 def initialize_gps():
     try:
         gpsd.connect()
@@ -41,7 +41,7 @@ def get_gps_data():
         print(f"GPS error: {e}")
         return None
 
-def main():
+if __name__ == '__main__':
     # create WAV file in write only mode
     wav = wave.open(WAV_FILE, 'wb')
     wav.setnchannels(1)  #mono recording
