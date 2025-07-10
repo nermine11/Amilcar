@@ -6,7 +6,6 @@ You will need an updated Linux kernel. You will need at least version 4.18.12. Y
 ```
 # uname -a
 ```
-Linux hifiberry 4.18.12-v7 #1 SMP ...
 
 After running audio_setup.sh, The system should now list the correct card:
 ```
