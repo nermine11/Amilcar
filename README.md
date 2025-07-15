@@ -46,8 +46,6 @@ Unzip the content of the release in the /home/pi/Amilcar folder and run the foll
 
 ```
 source install_amilcar.sh
-sudo apt install i2c-tools
-sudo apt install libportaudio2
 ```
 
 Reboot the Raspberry.
