@@ -6,7 +6,8 @@
 
 # update
 sudo apt update
-sudo apt install -y virtualenv libjack-jackd2-dev i2c-tools
+sudo apt install -y python3-venv libjack-jackd2-dev jackd2 i2c-tools
+
 
 # install and activate the virtual environment
 sudo virtualenv -p /usr/bin/python3 venv
