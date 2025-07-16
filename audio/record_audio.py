@@ -196,7 +196,7 @@ def get_current_hour_filename():
     """
     now      = time.gmtime
     folder_by_day   = os.path.join(base_dir, time.strftime("%Y%m%d", now))
-    os.makedir(folder_by_day, exit_ok=True)
+    os.makedir(folder_by_day, exist_ok=True)
     filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%M%S.wav",now))
     return filename, now.tm_hour
 
@@ -253,7 +253,7 @@ with client:
         except jack.JackError as e:
             print(f" Failed to connect {port_name}: {e}")
     #intial filename and hour
-    output_filename, current_hour = get_current_hour_filename
+    output_filename, current_hour = get_current_hour_filename()
     try:
         #checks if a shutdown flag has been raised(CTRL c or power cut)
         while not event.is_set():
@@ -264,7 +264,7 @@ with client:
                     buffer_to_save  = active_frames
                     markers_to_save = active_markers
                     active_frames   = []
-                    active_frames   = []
+                    active_markers   = []
                 # write last hour's audio in background
                 save_thread = threading.Thread(target=save_audio_and_markers,
                                                args=(buffer_to_save, markers_to_save, 
