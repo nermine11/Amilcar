@@ -8,8 +8,8 @@ import os
 import soundfile as sf
 
 # ==== Config ====
-channels = 2       # our hydrophone is dual mono
-base_dir = "./recordings"  # base directory for all recordings
+channels = 2                    # our hydrophone is dual mono
+base_dir = "./recordings"       # base directory for all recordings
 
 # client that connects to the JACK server
 client = jack.Client("Hydrophone-recorder")
@@ -19,8 +19,8 @@ sample_counter = 0
 event = threading.Event()
 
 # double-buffering to avoid audio loss
-active_buffer = []
-active_timestamps = []
+active_buffer = []              #current audio frames
+active_timestamps = []          # stores (timestamp,sample_offset)
 buffer_lock = threading.Lock()
 
 @client.set_process_callback
@@ -34,12 +34,21 @@ def process(frames: int):
     """
     global sample_counter
     assert frames == client.blocksize  # expected size of each block
+    '''
+    data contains each ports data
+    data = [
+        array([0.01, 0.03, ..., -0.02]),  # channel 1 (left)
+        array([0.00, 0.05, ..., -0.01])   # channel 2 (right)
+    ]
+    '''
     data = []
     for port in client.inports:
         data.append(port.get_array().copy())
-    # takes the raw audio samples in data and arranges them in
-    # 2D array[[sample_ch1 , sample_ch2]] so that they can 
-    # be saved as stereo audio
+    ''' 
+     takes the raw audio samples in data and arranges them in
+     2D array[[sample_ch1 , sample_ch2]] so that they can 
+     be saved as audio
+    '''
     frame = np.stack(data, axis=-1)
     with buffer_lock:
         active_buffer.append(frame)
@@ -71,8 +80,14 @@ def register_input_ports(client, num_channels: int):
     for ch in range(num_channels):
         client.inports.register(f"in_{ch+1}")
 
-# Inject cue markers
 def write_cue_markers(filename: str, cue_points):
+    """
+    Inject cue markers in the wav file
+    Parameters:
+    filename
+    cue_points
+    
+    """
     with open(filename, 'r+b') as f:
         # go to the end of the file
         f.seek(0, 2)
@@ -142,19 +157,22 @@ def get_current_hour_filename():
     filename = os.path.join(folder, time.strftime("hydrophone_%H%M%S.wav", now))
     return filename, now.tm_hour
 
-def save_audio_and_markers(buffer_data, timestamps, filename):
+def save_audio_and_markers(buffer_data, timestamps, filename:str):
     """
     Saves the audio buffer and embedded cue markers to disk
+    Paramters
+    buffer_data: data to save
+    timestamps: timestamps to inject
+    filename
     """
     if not buffer_data:
         print(f" Nothing to save for {filename}")
         return
     # concatenate all audio data
     audio_data = np.concatenate(buffer_data, axis=0)
-    # write audio using standard RIFF (not RF64)
+    # write audio using standard RIFF 
     sf.write(filename, audio_data, samplerate)
     print(f" Audio saved to {filename} ({samplerate} Hz)")
-
     # prepare and embed cue markers
     cue_points = []
     for ts, offset in timestamps:
@@ -170,7 +188,7 @@ callback process will start now
 activate the Jack Client
 '''
 with client:
-    print("Started recording")
+    print("Start recording")
     register_input_ports(client, channels)
     # list of Jack system input port names(left channel and right channel)
     system_inputs = []
@@ -185,12 +203,10 @@ with client:
             inport.connect(port_name)
         except jack.JackError as e:
             print(f" Failed to connect {port_name}: {e}")
-
     # initial filename and hour
     output_filename, current_hour = get_current_hour_filename()
-
     try:
-        while not event.is_set():
+        while not event.is_set():               #checks if a shutdown flag has been raised
             now = time.gmtime()
             if now.tm_hour != current_hour:
                 # swap buffers for hourly rotation
@@ -199,21 +215,18 @@ with client:
                     timestamps_to_save = active_timestamps
                     active_buffer = []
                     active_timestamps = []
-
                 # write last hour's audio in background
                 save_thread = threading.Thread(target=save_audio_and_markers,
                                                args=(buffer_to_save, timestamps_to_save, output_filename))
                 save_thread.start()
-
                 # update filename and hour
                 output_filename, current_hour = get_current_hour_filename()
-
             time.sleep(1)
     except KeyboardInterrupt:
         print("\n Interrupted by user. Stopping recording.")
         event.set()
 
-print(" Finalizing last hour...")
+print(" Finalizing last hour")
 with buffer_lock:
     save_audio_and_markers(active_buffer, active_timestamps, output_filename)
 print(" All done.")
