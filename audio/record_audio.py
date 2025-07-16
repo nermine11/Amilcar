@@ -271,7 +271,7 @@ with client:
                                                     output_filename))
                 save_thread.start()
                 #update filename and hour
-                output_filename, current_hour = get_current_hour_filename
+                output_filename, current_hour = get_current_hour_filename()
                 time.sleep(1)
     except KeyboardInterrupt:
         print("\n Interrupted by user, Stopping recording")
