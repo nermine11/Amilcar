@@ -12,8 +12,13 @@ import gpsd
 channels = 2                # our hydrophone is dual mono
 base_dir = "./recordings"   # folder to hold all recordings
 
+gps_enabled = False
 # Connect to the local gpsd
-gpsd.connect()
+try:
+    gpsd.connect()
+    gps_enabled = True
+except ConnectionRefusedError:
+    print("Continuing without GPS.")
 """
 put in a thread because it is slow and 
 can slow down real time recording
@@ -96,7 +101,7 @@ def gps_poll():
     
     global latest_gps_position
     # while no shutdown flag 
-    while not event.is_set():
+    while gps_enabled and not event.is_set():
         try:
             packet = gpsd.get_current()
             if packet.mode >=2:
