@@ -37,7 +37,7 @@ event = threading.Event()
 active_frames = []         # current audio frames
 active_markers = []         # stores (timestamp, sample_offset, (lat, lon))
 buffer_lock = threading.Lock()
-last_marker_second = -1
+last_marker_second = [-1]
 
 @client.set_process_callback
 def process(frames:int):
@@ -81,9 +81,10 @@ def process(frames:int):
         gps_position = latest_gps_position
     with buffer_lock:
         active_frames.append(frame)
-        if current_second != last_marker_second:
-            active_markers.append((time.time(), sample_counter, gps_position))
-            last_marker_second = current_second
+    if current_second != last_marker_second[0]:
+        active_markers.append((timestamp, sample_counter, gps_position))
+        last_marker_second[0] = current_second
+
 
     sample_counter += frames
 
