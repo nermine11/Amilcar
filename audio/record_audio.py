@@ -196,7 +196,7 @@ def get_current_hour_filename():
     """
     now      = time.gmtime()
     folder_by_day   = os.path.join(base_dir, time.strftime("%Y%m%d", now))
-    os.makedir(folder_by_day, exist_ok=True)
+    os.makedirs(folder_by_day, exist_ok=True)
     filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%M%S.wav",now))
     return filename, now.tm_hour
 
