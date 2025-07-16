@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
 import jack
-import numpy as np
 import threading
+import numpy as np
 import time
 import struct
 import os
 import soundfile as sf
 import gpsd
 
-# ==== Config ====
+# === Config ===
 
-channels = 2                    # our hydrophone is dual mono
-base_dir = "./recordings"       # base directory for all recordings
+channels = 2                # our hydrophone is dual mono
+base_dir = "./recordings"   # folder to hold all recordings
+
 # Connect to the local gpsd
 gpsd.connect()
 """
@@ -21,29 +21,34 @@ can slow down real time recording
 gps_lock = threading.lock()     
 latest_gps_position = None             
 
-# client that connects to the JACK server
-client = jack.Client("Hydrophone-recorder")
+#client that connects to the JACK server
+client      = jack.Client("Hydrophone_recorder")
 print(f" Connected to JACK at {client.samplerate} Hz")
-samplerate = client.samplerate
+samplerate  = client.samplerate
 sample_counter = 0
 event = threading.Event()
 
-# double-buffering to avoid audio loss
-active_buffer = []              #current audio frames
-active_stamps = []          # stores (timestamp,sample_offset,(lat,lon))
-buffer_lock = threading.Lock()
+#double buffering to avoid audio loss while saving every hour
+active_frames = []         # current audio frames
+active_markers = []         # stores (timestamp, sample_offset, (lat, lon))
+buffer_lock = threading.lock()
 
 @client.set_process_callback
-def process(frames: int):
+def process(frames:int):
     """
     audio receiving callback 
-    Each time Jack provides a new block of audio(n frames), we call this
-    function
+    Each time Jack provides a new block of audio(n frames), 
+    we call this function
     Parameters:
         frames: number of samples in this block
     """
     global sample_counter
-    assert frames == client.blocksize  # expected size of each block
+    '''
+    expected size of each block(should be
+    equal to number of frames sent by Jack
+    to the program
+    '''
+    assert frames == client.blocksize  
     '''
     data contains each ports data
     data = [
@@ -59,7 +64,7 @@ def process(frames: int):
      2D array[[sample_ch1 , sample_ch2]] so that they can 
      be saved as audio
     '''
-    frame = np.stack(data, axis=-1)
+    frame = np.stack(data, axis =-1)
     '''
      only gps thread can access 
      latest_gps_position now to not corrupt data
@@ -67,9 +72,9 @@ def process(frames: int):
     with gps_lock:
         gps_position = latest_gps_position
     with buffer_lock:
-        active_buffer.append(frame)
-        active_stamps.append((time.time(), sample_counter, gps_position))
-    sample_counter += frames  # update total sample count
+        active_frames.append(frame)
+        active_markers.append((time.time(), sample_counter, gps_position))
+    sample_counter += frames
 
 @client.set_shutdown_callback
 def shutdown(status: int, reason: str):
@@ -84,29 +89,22 @@ def shutdown(status: int, reason: str):
     print('shutdown reason:', reason)
     event.set()
 
-def gps_poll_loop():
+def gps_poll():
+    """
+    get the position of the rPi using GPS
+    """
+    
     global latest_gps_position
+    # while no shutdown flag 
     while not event.is_set():
         try:
             packet = gpsd.get_current()
-            if packet.mode >=2 :#gps fix
+            if packet.mode >=2:
                 with gps_lock:
                     latest_gps_position = (packet.lat, packet.lon)
         except Exception as e:
-            print(f"GPS poll error")
+            print(f"GPS poll error {e}")
         time.sleep(1)
-
-def register_input_ports(client, num_channels: int):
-    """
-    Register input ports to be able to receive audio 
-    from in_1(channel 1)
-         in_2(channel 2) 
-    Parameters:
-        client: JACK client
-        num_channels: number of channels
-    """
-    for ch in range(num_channels):
-        client.inports.register(f"in_{ch+1}")
 
 def write_cue_markers(filename: str, cue_points):
     """
@@ -175,48 +173,59 @@ def write_cue_markers(filename: str, cue_points):
         f.write(b'adtl')
         f.write(list_data)
 
+def register_input_ports(client, num_channels:int):
+    """
+    Register input ports to be able to receive audio 
+    from in_1(channel 1)
+         in_2(channel 2) 
+    Parameters:
+        client: JACK client
+        num_channels: number of channels
+    """
+    for channel in range(num_channels):
+        client.inports.register(f"in_{channel+1}")
+    
 def get_current_hour_filename():
     """
-    Generates full output filename like ./recordings/20250715/hydrophone_20250715_13.wav
+    generates full output filename like ./recordings/20250715/hydrophone_20250715_13.wav
     """
-    now = time.gmtime()
-    folder = os.path.join(base_dir, time.strftime("%Y%m%d", now))
-    os.makedirs(folder, exist_ok=True)
-    filename = os.path.join(folder, time.strftime("hydrophone_%H%M%S.wav", now))
+    now      = time.gmtime
+    folder_by_day   = os.path.join(base_dir, time.strftime("%Y%m%d", now))
+    os.makedir(folder_by_day, exit_ok=True)
+    filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%M%S.wav",now))
     return filename, now.tm_hour
 
-def save_audio_and_markers(buffer_data, stamps, filename:str):
+def save_audio_and_markers(buffer_data, markers, filename:str):
     """
-    Saves the audio buffer and embedded cue markers to disk
+    Saves the audio buffer and embedded cue markers to the audio file
     Paramters
-    buffer_data: data to save
-    stamps: stamps to inject
-    filename
+    buffer_data: audio frames to save
+    markers: markers to inject
+    filename: file to save to
     """
     if not buffer_data:
         print(f" Nothing to save for {filename}")
         return
-    # concatenate all audio data
+    #concatenate all audio data
     audio_data = np.concatenate(buffer_data, axis=0)
-    # write audio using standard RIFF 
+    #write data using standard WAV RIFF
     sf.write(filename, audio_data, samplerate)
     print(f" Audio saved to {filename} ({samplerate} Hz)")
     # prepare and embed cue markers
     cue_points = []
-    for ts, offset , gps_position in stamps:
-        label = f"sample {offset} at {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(ts))}"
+    for timestamp, sample_offset, gps_position in markers:
+        label = f"sample {sample_offset} at {time.strftime("%Y-%m-%d %H%M%S", time.gmtime(timestamp))}"
         if gps_position:
-            label += f"(position: {gps_position.lat}, {gps_position.lon})"
+            label += f" (position: {gps_position.lat}, {gps_position.lon})"
         else:
             label += "_,_"
-        cue_points.append((offset, label))
-    write_cue_markers(filename, cue_points)
-    print(f" Cue markers embedded in {filename}")
-
+        cue_points.append((sample_offset, label))
+        write_cue_markers(filename, cue_points)
+    
 # ========== Start Recording ==========
 
-#start GPS polling in the background
-threading.Thread(target=gps_poll_loop, daemon=True).start()
+#start GPS polling in the background because GPSD is slow
+threading.Thread(target=gps_poll, daemon=True).start()
 
 '''
 callback process will start now
@@ -227,42 +236,43 @@ with client:
     register_input_ports(client, channels)
     # list of Jack system input port names(left channel and right channel)
     system_inputs = []
-    for i in range(channels):
-        system_inputs.append(f"system:capture_{i+1}")
+    for i in range (channels):
+        system_inputs.append(f"system: capture_{i+1}")
     ''' 
-    connect my Python input port(in_1, in_2) to the system's
-    input port to be able to process the audio
+    connect my Python input ports(in_1, in_2) to the system's
+    input ports to be able to process the audio
     '''
     for port_name, inport in zip(system_inputs, client.inports):
         try:
             inport.connect(port_name)
         except jack.JackError as e:
             print(f" Failed to connect {port_name}: {e}")
-    # initial filename and hour
-    output_filename, current_hour = get_current_hour_filename()
+    #intial filename and hour
+    output_filename, current_hour = get_current_hour_filename
     try:
         #checks if a shutdown flag has been raised(CTRL c or power cut)
-        while not event.is_set():               
+        while not event.is_set():
             now = time.gmtime()
             if now.tm_hour != current_hour:
                 # swap buffers for hourly rotation
                 with buffer_lock:
-                    buffer_to_save = active_buffer
-                    stamps_to_save = active_stamps
-                    active_buffer = []
-                    active_stamps = []
+                    buffer_to_save  = active_frames
+                    markers_to_save = active_markers
+                    active_frames   = []
+                    active_frames   = []
                 # write last hour's audio in background
                 save_thread = threading.Thread(target=save_audio_and_markers,
-                                               args=(buffer_to_save, stamps_to_save, output_filename))
+                                               args=(buffer_to_save, markers_to_save, 
+                                                    output_filename))
                 save_thread.start()
-                # update filename and hour
-                output_filename, current_hour = get_current_hour_filename()
-            time.sleep(1)
+                #update filename and hour
+                output_filename, current_hour = get_current_hour_filename
+                time.sleep(1)
     except KeyboardInterrupt:
-        print("\n Interrupted by user. Stopping recording.")
-        event.set()
-
-print(" Finalizing last hour")
+        print("\n Interrupted by user, Stopping recording")
+        event.set() # shutdown will be called
+    
+#if CTRL_C has been pressed in the middle of recording
 with buffer_lock:
-    save_audio_and_markers(active_buffer, active_stamps, output_filename)
-print(" All done.")
+    save_audio_and_markers(active_frames, active_markers, output_filename)
+print("All done")
