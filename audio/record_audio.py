@@ -37,6 +37,7 @@ event = threading.Event()
 active_frames = []         # current audio frames
 active_markers = []         # stores (timestamp, sample_offset, (lat, lon))
 buffer_lock = threading.Lock()
+last_marker_second = -1
 
 @client.set_process_callback
 def process(frames:int):
@@ -47,7 +48,7 @@ def process(frames:int):
     Parameters:
         frames: number of samples in this block
     """
-    global sample_counter
+    global sample_counter, last_marker_second
     '''
     expected size of each block(should be
     equal to number of frames sent by Jack
@@ -74,11 +75,16 @@ def process(frames:int):
      only gps thread can access 
      latest_gps_position now to not corrupt data
     '''
+    timestamp = time.time()
+    current_second = int(timestamp)
     with gps_lock:
         gps_position = latest_gps_position
     with buffer_lock:
         active_frames.append(frame)
-        active_markers.append((time.time(), sample_counter, gps_position))
+        if current_second != last_marker_second:
+            active_markers.append((time.time(), sample_counter, gps_position))
+            last_marker_second = current_second
+
     sample_counter += frames
 
 @client.set_shutdown_callback
