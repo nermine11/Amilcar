@@ -242,7 +242,7 @@ with client:
     # list of Jack system input port names(left channel and right channel)
     system_inputs = []
     for i in range (channels):
-        system_inputs.append(f"system: capture_{i+1}")
+        system_inputs.append(f"system:capture_{i+1}")
     ''' 
     connect my Python input ports(in_1, in_2) to the system's
     input ports to be able to process the audio
