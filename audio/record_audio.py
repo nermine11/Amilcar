@@ -23,7 +23,7 @@ except ConnectionRefusedError:
 put in a thread because it is slow and 
 can slow down real time recording
 """
-gps_lock = threading.lock()     
+gps_lock = threading.Lock()     
 latest_gps_position = None             
 
 #client that connects to the JACK server
@@ -36,7 +36,7 @@ event = threading.Event()
 #double buffering to avoid audio loss while saving every hour
 active_frames = []         # current audio frames
 active_markers = []         # stores (timestamp, sample_offset, (lat, lon))
-buffer_lock = threading.lock()
+buffer_lock = threading.Lock()
 
 @client.set_process_callback
 def process(frames:int):
