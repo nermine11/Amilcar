@@ -8,7 +8,7 @@ sudo apt upgrade
 sudo apt install pps-tools gpsd gpsd-clients chrony
 
 #Set up the Pi to release the console pins
-#free the UART port (in our case /dev/ttyS0) for GPS communication,
+#free the UART port (in our case /dev/ttyAMA0) for GPS communication,
 sudo raspi-config nonint do_serial_cons 1
 
 #Enable PPS
@@ -32,11 +32,11 @@ echo 'pps-gpio' | sudo tee -a /etc/modules > /dev/null
 
 #Edit /etc/default/gpsd:
 #Installing a GPS Daemon (gpsd)
-#serial might be /dev/ttyAMA0
+#serial might be /dev/ttyS0
 sudo sed -i 's|^DEVICES=""|#DEVICES=""|' /etc/default/gpsd
 grep -q '^DEVICES=' /etc/default/gpsd && \
-sudo sed -i 's|^DEVICES=.*|DEVICES="/dev/ttyS0 /dev/pps0"|' /etc/default/gpsd || \
-echo 'DEVICES="/dev/ttyS0 /dev/pps0"' | sudo tee -a /etc/default/gpsd > /dev/null
+sudo sed -i 's|^DEVICES=.*|DEVICES="/dev/ttyAMA0 /dev/pps0"|' /etc/default/gpsd || \
+echo 'DEVICES="/dev/ttyAMA0 /dev/pps0"' | sudo tee -a /etc/default/gpsd > /dev/null
 # -n means start without a client connection (i.e. at boot)
 grep -q '^GPSD_OPTIONS=' /etc/default/gpsd && \
 sudo sed -i 's|^GPSD_OPTIONS=.*|GPSD_OPTIONS="-n"|' /etc/default/gpsd || \
