@@ -228,7 +228,7 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
     for timestamp, sample_offset, gps_position in markers:
         label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H%M%S', time.gmtime(timestamp))}"
         if gps_position:
-            label += f" (position: {gps_position.lat}, {gps_position.lon})"
+            label += f" (position: {gps_position[0]}, {gps_position[1]})"
         else:
             label += "_,_"
         cue_points.append((sample_offset, label))
