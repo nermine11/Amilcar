@@ -228,7 +228,7 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
         else:
             label += "_,_"
         cue_points.append((sample_offset, label))
-        write_cue_markers(filename, cue_points)
+    write_cue_markers(filename, cue_points)
     
 # ========== Start Recording ==========
 
