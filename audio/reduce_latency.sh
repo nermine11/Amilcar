@@ -7,13 +7,13 @@ done
 
 
 ## Remount /dev/shm to prevent memory allocation errors
-sudo mount -o remount,size=128M /dev/shm
-## Stop the dbus service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
-sudo service dbus stop 
+mount -o remount,size=128M /dev/shm
 ## Stop the polkitd service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
-sudo killall polkitd
+killall polkitd
 ## Kill the usespace gnome virtual filesystem daemon. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
 killall gvfsd
+## Stop the dbus service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
+service dbus stop 
 ## Kill the userspace D-Bus daemon. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
 killall dbus-daemon 
 
