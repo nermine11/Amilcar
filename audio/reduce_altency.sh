@@ -4,12 +4,8 @@
 for cpu in /sys/devices/system/cpu/cpu[0-9]*; do
   echo performance | sudo tee $cpu/cpufreq/scaling_governor
 done
-#stop the timesync service
-sudo systemctl stop systemd-timesyncd
-sudo systemctl disable systemd-timesyncd
-## Stop the triggerhappy service
-sudo systemctl stop triggerhappy 
-sudo systemctl disable triggerhappy
+
+
 ## Remount /dev/shm to prevent memory allocation errors
 sudo mount -o remount,size=128M /dev/shm
 ## Stop the dbus service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
