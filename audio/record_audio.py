@@ -28,7 +28,6 @@ latest_gps_position = None
 
 #client that connects to the JACK server
 client      = jack.Client("Hydrophone_recorder")
-print(f" Connected to JACK at {client.samplerate} Hz")
 samplerate  = client.samplerate
 sample_counter = 0
 event = threading.Event()
@@ -75,7 +74,7 @@ def process(frames:int):
      only gps thread can access 
      latest_gps_position now to not corrupt data
     '''
-    timestamp = time.time()
+    timestamp = time.time()  #number of seconds passed since epoch 1789952.23
     current_second = int(timestamp)
     with gps_lock:
         gps_position = latest_gps_position
@@ -84,8 +83,6 @@ def process(frames:int):
     if current_second != last_marker_second[0]:
         active_markers.append((timestamp, sample_counter, gps_position))
         last_marker_second[0] = current_second
-
-
     sample_counter += frames
 
 @client.set_shutdown_callback
@@ -97,8 +94,8 @@ def shutdown(status: int, reason: str):
         status: status code(error codes)
         reason: string message explaining 
     """
-    print('shutdown status:', status)
-    print('shutdown reason:', reason)
+    #print('shutdown status:', status)
+    #print('shutdown reason:', reason)
     event.set()
 
 def gps_poll():
@@ -116,7 +113,7 @@ def gps_poll():
                     latest_gps_position = (packet.lat, packet.lon)
         except Exception as e:
             print(f"GPS poll error {e}")
-        time.sleep(1)
+        time.sleep(1)#reduce CPU usage since GPS update every second
 
 def write_cue_markers(filename: str, cue_points):
     """
@@ -216,17 +213,16 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
     filename: file to save to
     """
     if not buffer_data:
-        print(f" Nothing to save for {filename}")
         return
     #concatenate all audio data
     audio_data = np.concatenate(buffer_data, axis=0)
     #write data using standard WAV RIFF
     sf.write(filename, audio_data, samplerate)
-    print(f" Audio saved to {filename} ({samplerate} Hz)")
     # prepare and embed cue markers
     cue_points = []
     for timestamp, sample_offset, gps_position in markers:
-        label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H%M%S', time.gmtime(timestamp))}"
+        ms    = int(timestamp%1) * 1000
+        label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H%M%S', time.gmtime(timestamp))}.{ms}"
         if gps_position:
             label += f" (position: {gps_position[0]}, {gps_position[1]})"
         else:
@@ -244,7 +240,6 @@ callback process will start now
 activate the Jack Client
 '''
 with client:
-    print("Start recording")
     register_input_ports(client, channels)
     # list of Jack system input port names(left channel and right channel)
     system_inputs = []
@@ -281,10 +276,8 @@ with client:
                 output_filename, current_hour = get_current_hour_filename()
                 time.sleep(1)
     except KeyboardInterrupt:
-        print("\n Interrupted by user, Stopping recording")
         event.set() # shutdown will be called
     
 #if CTRL_C has been pressed in the middle of recording
 with buffer_lock:
     save_audio_and_markers(active_frames, active_markers, output_filename)
-print("All done")
