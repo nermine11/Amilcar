@@ -202,7 +202,7 @@ def get_current_hour_filename():
     folder_by_day   = os.path.join(base_dir, time.strftime("%Y%m%d", now))
     os.makedirs(folder_by_day, exist_ok=True)
     filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%M%S.wav",now))
-    return filename, now.tm_hour
+    return filename, time.time()
 
 def save_audio_and_markers(buffer_data, markers, filename:str):
     """
@@ -221,7 +221,7 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
     # prepare and embed cue markers
     cue_points = []
     for timestamp, sample_offset, gps_position in markers:
-        ms    = int(timestamp%1) * 1000
+        ms    = int((timestamp%1) * 1000)
         label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H%M%S', time.gmtime(timestamp))}.{ms}"
         if gps_position:
             label += f" (position: {gps_position[0]}, {gps_position[1]})"
@@ -259,8 +259,7 @@ with client:
     try:
         #checks if a shutdown flag has been raised(CTRL c or power cut)
         while not event.is_set():
-            now = time.gmtime()
-            if now.tm_hour != current_hour:
+            if time.time() - current_hour >= 3600:
                 # swap buffers for hourly rotation
                 with buffer_lock:
                     buffer_to_save  = active_frames
@@ -274,7 +273,7 @@ with client:
                 save_thread.start()
                 #update filename and hour
                 output_filename, current_hour = get_current_hour_filename()
-                time.sleep(1)
+                time.sleep(0.1)
     except KeyboardInterrupt:
         event.set() # shutdown will be called
     
