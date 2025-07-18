@@ -48,6 +48,36 @@ Unzip the content of the release in the /home/pi/Amilcar folder and run the foll
 source install_amilcar.sh
 ```
 
+```
+**Create a systemd Service File**
+```
+sudo nano /etc/systemd/system/install_amilcar.service
+```
+
+**Paste the following content:**
+```
+[Unit]
+Description= install setup
+After=network.target 
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/pi/Amilcar/install_amilcar.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+**save and exit**
+
+**Reload the service files to include the new service.**
+```
+sudo systemctl daemon-reload
+```
+**Start and enable the service:**
+```
+systemctl start install_amilcar.service
+```
 Reboot the Raspberry.
 
 ### Step 3: Set the internal time of the rPi as GPS time, 
