@@ -5,14 +5,14 @@
 ##############################################################
 
 # update
-sudo apt update
-sudo apt install -y python3-venv libjack-jackd2-dev jackd2 i2c-tools
+apt update
+apt install -y python3-venv libjack-jackd2-dev jackd2 i2c-tools
 
 
 # install and activate the virtual environment
-sudo virtualenv -p /usr/bin/python3 venv
+virtualenv -p /usr/bin/python3 venv
 source venv/bin/activate
 
 # Install the Python packages needed by the SmartMesh SDK inside the venv
-sudo venv/bin/pip install -r /home/pi/Amilcar/requirements.txt --default-timeout=100
+venv/bin/pip install -r /home/pi/Amilcar/requirements.txt --default-timeout=100
 
