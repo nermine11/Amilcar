@@ -2,9 +2,8 @@
 
 ## Set the CPU scaling governor to performance
 for cpu in /sys/devices/system/cpu/cpu[0-9]*; do
-  echo performance | sudo tee $cpu/cpufreq/scaling_governor
+  echo performance | tee $cpu/cpufreq/scaling_governor
 done
-
 
 ## Remount /dev/shm to prevent memory allocation errors
 mount -o remount,size=128M /dev/shm
