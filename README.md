@@ -220,8 +220,8 @@ sudo nano /etc/systemd/system/jack_server.service
 **Paste the following content:**
 ```
 [Unit]
-Description= run jack server
-After= audio.target
+Description=run jack server
+After=audio.target
 
 [Service]
 Restart=always
