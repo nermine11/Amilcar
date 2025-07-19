@@ -61,7 +61,7 @@ Description=install setup
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/home/pi/Amilcar/install_amilcar.sh
+ExecStart==/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/install_amilcar.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -158,9 +158,7 @@ sudo usermod -aG audio pi
 sudo reboot
 ```
 
-
 ### Step 7: reduce latency
-
 
 **Make  the file reduce_latency_on_boot.sh executable and run it**
 ```
@@ -212,7 +210,7 @@ sudo systemctl enable reduce_latency.service
 sudo reboot
 ```
 
-### Step 7: run the jack server to record audio
+### Step 8: run the jack server to record audio
 
 **Create a systemd Service File**
 ```
@@ -254,9 +252,7 @@ sudo systemctl enable jack_server.service
 sudo reboot
 ```
 
-
-### Step 8: record audio
-
+### Step 9: record audio
 
 **Create a systemd Service File**
 ```
@@ -271,10 +267,11 @@ After=jack_server.service gpsd.service
 Wants=jack_server.service gpsd.service
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/Amilcar/audio/record_audio.py
+ExecStart=/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/audio/record_audio.py
 WorkingDirectory=/home/pi/Amilcar
 Restart=always
 RestartSec=1
+User=pi
 Group=audio
 
 [Install]
