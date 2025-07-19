@@ -12,3 +12,27 @@ sudo systemctl disable systemd-timesyncd
 ## Stop the triggerhappy service
 sudo systemctl stop triggerhappy 
 sudo systemctl disable triggerhappy
+
+SERVICES=(
+  systemd-timesyncd # stop the timesync service
+  triggerhappy      # Stop the triggerhappy service
+  bluetooth         # Stop the bluetooth service
+  ModemManager      # Handles cellular USB modems
+  #wpa_supplicant    # Wi-Fi connection manager
+  avahi-daemon
+  cups               #printing service
+  rsyslog            # Legacy logging daemon	
+  cron               # scheduled tasks not used
+  anacron            # scheduled tasks not used
+  man-db.timer       #Updates man page 
+  apt-daily.service  # auto checks for package updates
+  apt-daily.timer    # auto checks for package updates
+  #alsa-restore
+  hciuart            #Initializes Bluetooth chip over UART
+  #keyboard-setup    #configures keyboard layout setup on boot
+)
+
+for svc in "${SERVICES[@]}"; do
+  systemctl stop "$svc" 2>/dev/null || true
+  systemctl disable "$svc" 2>/dev/null || true
+done
