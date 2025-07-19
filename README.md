@@ -45,7 +45,7 @@ From your Raspberry Pi download the latest Release or clone the repository of Am
 Unzip the content of the release in the /home/pi/Amilcar folder and run the following commands:
 **make the file executable**
 ```
-sudo chmod + x install_amilcar.sh
+sudo chmod +x install_amilcar.sh
 ```
 
 **Create a systemd Service File**
@@ -74,11 +74,11 @@ sudo systemctl daemon-reload
 ```
 **Start and enable the service:**
 ```
-systemctl start install_amilcar.service
+sudo systemctl start install_amilcar.service
 ```
 **And automatically get it to start on boot:**
 ```
-systemctl enable install_amilcar.service
+sudo systemctl enable install_amilcar.service
 ```
 
 **Reboot the Raspberry**
@@ -139,12 +139,12 @@ sudo systemctl daemon-reload
 ```
 **Start and enable the service:**
 ```
-systemctl start RTC_GPS_sync.service
+sudo systemctl start RTC_GPS_sync.service
 ```
 
 **And automatically get it to start on boot:**
 ```
-systemctl enable RTC_GPS_sync.service
+sudo systemctl enable RTC_GPS_sync.service
 ```
 
 **Reboot the Raspberry**
@@ -199,12 +199,12 @@ sudo systemctl daemon-reload
 ```
 **Start and enable the service:**
 ```
-systemctl start reduce_latency.service
+sudo systemctl start reduce_latency.service
 ```
 
 **And automatically get it to start on boot:**
 ```
-systemctl enable reduce_latency.service
+sudo systemctl enable reduce_latency.service
 ```
 
 **Reboot the Raspberry**
@@ -241,12 +241,12 @@ sudo systemctl daemon-reload
 ```
 **Start and enable the service:**
 ```
-systemctl start jack_server.service
+sudo systemctl start jack_server.service
 ```
 
 **And automatically get it to start on boot:**
 ```
-systemctl enable jack_server.service
+sudo systemctl enable jack_server.service
 ```
 
 **Reboot the Raspberry**
@@ -288,12 +288,12 @@ sudo systemctl daemon-reload
 ```
 **Start and enable the service:**
 ```
-systemctl start record_audio.service
+sudo systemctl start record_audio.service
 ```
 
 **And automatically get it to start on boot:**
 ```
-systemctl enable record_audio.service
+sudo systemctl enable record_audio.service
 ```
 
 **Reboot the Raspberry**
