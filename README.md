@@ -43,12 +43,11 @@ For the password type: `raspberry`
 From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
 Unzip the content of the release in the /home/pi/Amilcar folder and run the following commands:
+**make the file executable**
+```
+sudo chmod + x install_amilcar.sh
+```
 
-```
-source install_amilcar.sh
-```
-
-```
 **Create a systemd Service File**
 ```
 sudo nano /etc/systemd/system/install_amilcar.service
@@ -57,8 +56,7 @@ sudo nano /etc/systemd/system/install_amilcar.service
 **Paste the following content:**
 ```
 [Unit]
-Description= install setup
-After=network.target 
+Description=install setup
 
 [Service]
 Type=oneshot
@@ -78,7 +76,15 @@ sudo systemctl daemon-reload
 ```
 systemctl start install_amilcar.service
 ```
-Reboot the Raspberry.
+**And automatically get it to start on boot:**
+```
+systemctl enable install_amilcar.service
+```
+
+**Reboot the Raspberry**
+```
+sudo reboot
+```
 
 ### Step 3: Set the internal time of the rPi as GPS time, 
 ***Run GPS_setup.sh***
@@ -86,13 +92,12 @@ Reboot the Raspberry.
  sudo chmod +x GPS/GPS_setup.sh
  ./GPS/GPS_setup.sh
  ```
-Comment manually the content of 
+Comment manually to not use Interent time servers the content of 
 - #debian vendor zone
 - #use time sources from dhcp
 - #use ntp sources found in etc/chrony/sources.d
   
-  to not use Interent time servers
-  
+ 
 ### Step 4: Setup the RTC 
 ***Run RTC_setup.sh***
 ```
@@ -100,13 +105,10 @@ Comment manually the content of
 ./RTC/RTC_setup.sh
 ```
 ### Step 5: Discipline the RTC using GPS and use RTC as fallback 
-***Move RTC_GPS_sync.sh***
-```
-sudo mv RTC/RTC_GPS_sync.sh /usr/local/bin/RTC_GPS_sync.sh
-```
+
 **Make  the file RTC_GPS_sync.sh executable**
 ```
-sudo chmod +x /usr/local/bin/RTC_GPS_sync.sh
+sudo chmod +x ./GPS/RTC_GPS_sync.sh
 
 ```
 **Create a systemd Service File**
@@ -117,12 +119,12 @@ sudo nano /etc/systemd/system/rtc-gps-sync.service
 **Paste the following content:**
 ```
 [Unit]
-Description= RTC fallback
-After=network.target gpsd.service
+Description=RTC fallback
+After=gpsd.service
 Wants=gpsd.service
 
 [Service]
-ExecStart=/usr/local/bin/RTC_GPS_sync.sh
+ExecStart=/home/pi/Amilcar/GPS/RTC_GPS_sync.sh
 Restart=always
 RestartSec=1
 
@@ -139,7 +141,163 @@ sudo systemctl daemon-reload
 ```
 systemctl start RTC_GPS_sync.service
 ```
+
 **And automatically get it to start on boot:**
 ```
 systemctl enable RTC_GPS_sync.service
 ```
+
+**Reboot the Raspberry**
+```
+sudo reboot
+```
+
+### Step 6: add audio group to user
+```
+sudo usermod -aG audio pi
+sudo reboot
+```
+
+
+### Step 7: reduce latency
+
+
+**Make  the file reduce_latency_on_boot.sh executable and run it**
+```
+sudo chmod +x ./audio/reduce_latency_on_boot.sh
+./audio/reduce_latency_on_boot.sh
+```
+
+**Make  the file reduce_latency.sh executable**
+```
+sudo chmod +x ./audio/reduce_latency.sh
+```
+
+**Create a systemd Service File**
+```
+sudo nano /etc/systemd/system/reduce_latency.service
+```
+
+**Paste the following content:**
+```
+[Unit]
+Description=reduce latency
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/pi/Amilcar/audio/reduce_latency.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+**save and exit**
+
+**Reload the service files to include the new service.**
+```
+sudo systemctl daemon-reload
+```
+**Start and enable the service:**
+```
+systemctl start reduce_latency.service
+```
+
+**And automatically get it to start on boot:**
+```
+systemctl enable reduce_latency.service
+```
+
+**Reboot the Raspberry**
+```
+sudo reboot
+```
+
+### Step 7: run the jack server to record audio
+
+**Create a systemd Service File**
+```
+sudo nano /etc/systemd/system/jack_server.service
+```
+
+**Paste the following content:**
+```
+[Unit]
+Description= run jack server
+After= audio.target
+
+[Service]
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d sysdefault -r 44100 -p2048 -n3
+
+[Install]
+WantedBy=multi-user.target
+```
+**save and exit**
+
+**Reload the service files to include the new service.**
+```
+sudo systemctl daemon-reload
+```
+**Start and enable the service:**
+```
+systemctl start jack_server.service
+```
+
+**And automatically get it to start on boot:**
+```
+systemctl enable jack_server.service
+```
+
+**Reboot the Raspberry**
+```
+sudo reboot
+```
+
+
+### Step 8: record audio
+
+
+**Create a systemd Service File**
+```
+sudo nano /etc/systemd/system/record_audio.service
+```
+
+**Paste the following content:**
+```
+[Unit]
+Description=Hydrophone Audio Recorder
+After=jack_server.service gpsd.service
+Wants=jack_server.service gpsd.service
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/Amilcar/audio/record_audio.py
+WorkingDirectory=/home/pi/Amilcar
+Restart=always
+RestartSec=1
+Group=audio
+
+[Install]
+WantedBy=multi-user.target
+```
+**save and exit**
+
+**Reload the service files to include the new service.**
+```
+sudo systemctl daemon-reload
+```
+**Start and enable the service:**
+```
+systemctl start record_audio.service
+```
+
+**And automatically get it to start on boot:**
+```
+systemctl enable record_audio.service
+```
+
+**Reboot the Raspberry**
+```
+sudo reboot
+```
+
