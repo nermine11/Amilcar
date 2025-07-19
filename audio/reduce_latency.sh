@@ -12,7 +12,7 @@ killall polkitd
 ## Kill the usespace gnome virtual filesystem daemon. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
 killall gvfsd
 ## Stop the dbus service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
-service dbus stop 
+#service dbus stop 
 ## Kill the userspace D-Bus daemon. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
-killall dbus-daemon 
+#killall dbus-daemon 
 
