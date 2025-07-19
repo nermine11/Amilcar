@@ -6,6 +6,36 @@ grep -q '^core_freq=250' /boot/firmware/config.txt || echo 'core_freq=250       
 grep -q '^over_voltage=6' /boot/firmware/config.txt || echo 'over_voltage=6       # Increases voltage to support higher clock' | sudo tee -a /boot/firmware/config.txt > /dev/null
 grep -q '^gpu_freq=250' /boot/firmware/config.txt || echo 'gpu_freq=250         # GPU clock (safe)' | sudo tee -a /boot/firmware/config.txt > /dev/null
 
+sudo tee /etc/modprobe.d/raspi-blacklist.conf > /dev/null 
+<<EOF
+# WiFi
+#blacklist brcmfmac
+#blacklist brcmutil
+
+# Bluetooth
+blacklist btbcm
+blacklist hci_uart
+EOF
+
+
+#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio pavucontrol triggerhappy wolfram-engine 
+ 
+sudo apt purge --auto-remove wolfram-engine	 pavucontrol pulseaudio 
+
+#disable leds
+sudo tee -a /boot/firmware/config.txt > /dev/null <<EOF
+# Disable ACT LED (SD card activity)
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=off
+
+# Disable PWR LED (power status)
+dtparam=pwr_led_trigger=none
+dtparam=pwr_led_activelow=off
+EOF
+
+
+
+
 #stop the timesync service
 sudo systemctl stop systemd-timesyncd
 sudo systemctl disable systemd-timesyncd
@@ -14,22 +44,26 @@ sudo systemctl stop triggerhappy
 sudo systemctl disable triggerhappy
 
 SERVICES=(
-  systemd-timesyncd # stop the timesync service
-  triggerhappy      # Stop the triggerhappy service
-  bluetooth         # Stop the bluetooth service
-  ModemManager      # Handles cellular USB modems
-  #wpa_supplicant    # Wi-Fi connection manager
-  avahi-daemon
-  cups               #printing service
-  rsyslog            # Legacy logging daemon	
-  cron               # scheduled tasks not used
-  anacron            # scheduled tasks not used
-  man-db.timer       #Updates man page 
-  apt-daily.service  # auto checks for package updates
-  apt-daily.timer    # auto checks for package updates
+  systemd-timesyncd        # stop the timesync service
+  triggerhappy             # Stop the triggerhappy service
+  bluetooth                # Stop the bluetooth service
+  ModemManager             # Handles cellular USB modems
+  #wpa_supplicant          # Wi-Fi connection manager
+  avahi-daemon             #For local hostname discovery
+  cups                     #printing service
+  rsyslog                  # Legacy logging daemon	
+  cron                     # scheduled tasks not used
+  anacron                  # scheduled tasks not used
+  man-db.timer             #Updates man page 
+  apt-daily.service        # auto checks for package updates
+  apt-daily.timer          # auto checks for package updates
+  apt-daily-upgrade.timer  # auto checks for package updates
   #alsa-restore
-  hciuart            #Initializes Bluetooth chip over UART
-  #keyboard-setup    #configures keyboard layout setup on boot
+  hciuart                  #Initializes Bluetooth chip over UART
+  #keyboard-setup          #configures keyboard layout setup on boot
+  whoopsie                 # Crash reporting to Canonical	
+  motd-news.timer	       # Daily online news in motd
+
 )
 
 for svc in "${SERVICES[@]}"; do

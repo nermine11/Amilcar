@@ -16,3 +16,7 @@ killall gvfsd
 ## Kill the userspace D-Bus daemon. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
 #killall dbus-daemon 
 
+#disable HDMI
+#/opt/vc/bin/tvservice -o
+#block wifi
+#rfkill block wifi
