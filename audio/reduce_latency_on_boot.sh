@@ -6,8 +6,7 @@ grep -q '^core_freq=250' /boot/firmware/config.txt || echo 'core_freq=250       
 grep -q '^over_voltage=6' /boot/firmware/config.txt || echo 'over_voltage=6       # Increases voltage to support higher clock' | sudo tee -a /boot/firmware/config.txt > /dev/null
 grep -q '^gpu_freq=250' /boot/firmware/config.txt || echo 'gpu_freq=250         # GPU clock (safe)' | sudo tee -a /boot/firmware/config.txt > /dev/null
 
-sudo tee /etc/modprobe.d/raspi-blacklist.conf > /dev/null 
-<<EOF
+sudo tee /etc/modprobe.d/raspi-blacklist.conf > /dev/null <<EOF
 # WiFi
 #blacklist brcmfmac
 #blacklist brcmutil
@@ -18,9 +17,9 @@ blacklist hci_uart
 EOF
 
 
-#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio pavucontrol triggerhappy wolfram-engine 
+#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy 
  
-sudo apt purge --auto-remove wolfram-engine	 pavucontrol pulseaudio 
+sudo apt purge --auto-remove  pulseaudio 
 
 #disable leds
 sudo tee -a /boot/firmware/config.txt > /dev/null <<EOF
@@ -34,15 +33,6 @@ dtparam=pwr_led_activelow=off
 EOF
 
 
-
-
-#stop the timesync service
-sudo systemctl stop systemd-timesyncd
-sudo systemctl disable systemd-timesyncd
-## Stop the triggerhappy service
-sudo systemctl stop triggerhappy 
-sudo systemctl disable triggerhappy
-
 SERVICES=(
   systemd-timesyncd        # stop the timesync service
   triggerhappy             # Stop the triggerhappy service
@@ -51,7 +41,6 @@ SERVICES=(
   #wpa_supplicant          # Wi-Fi connection manager
   avahi-daemon             #For local hostname discovery
   cups                     #printing service
-  rsyslog                  # Legacy logging daemon	
   cron                     # scheduled tasks not used
   anacron                  # scheduled tasks not used
   man-db.timer             #Updates man page 
@@ -61,8 +50,6 @@ SERVICES=(
   #alsa-restore
   hciuart                  #Initializes Bluetooth chip over UART
   #keyboard-setup          #configures keyboard layout setup on boot
-  whoopsie                 # Crash reporting to Canonical	
-  motd-news.timer	       # Daily online news in motd
 
 )
 
