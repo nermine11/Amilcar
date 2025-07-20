@@ -184,7 +184,6 @@ Description=reduce latency
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-#ExecStartPre=/bin/sleep 2
 ExecStart=/home/pi/Amilcar/audio/reduce_latency.sh
 
 [Install]

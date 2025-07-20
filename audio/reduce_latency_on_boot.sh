@@ -16,8 +16,7 @@ blacklist btbcm
 blacklist hci_uart
 EOF
 
-
-#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy 
+#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy gvfs gvfs-daemons gvfs-backends gvfs-fuse
  
 sudo apt purge --auto-remove  pulseaudio 
 
@@ -49,8 +48,8 @@ SERVICES=(
   apt-daily-upgrade.timer  # auto checks for package updates
   #alsa-restore
   hciuart                  #Initializes Bluetooth chip over UART
-  #keyboard-setup          #configures keyboard layout setup on boot
-
+  #keyboard-setup          #configures keyboard layout setup on boot## Stop the polkitd service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
+  #polkit                   #controlling system-wide privileges
 )
 
 for svc in "${SERVICES[@]}"; do
