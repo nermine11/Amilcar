@@ -220,12 +220,15 @@ sudo nano /etc/systemd/system/jack_server.service
 **Paste the following content:**
 ```
 [Unit]
-Description= run jack server
-After= audio.target
+Description=run jack server
+After=sound.target
+requires=sound.target
 
 [Service]
 Restart=always
 RestartSec=1
+User=pi
+Group=audio
 ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d sysdefault -r 44100 -p2048 -n3
 
 [Install]
