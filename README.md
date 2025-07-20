@@ -180,11 +180,11 @@ sudo nano /etc/systemd/system/reduce_latency.service
 ```
 [Unit]
 Description=reduce latency
-After=polkit.service gvfsd.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+#ExecStartPre=/bin/sleep 2
 ExecStart=/home/pi/Amilcar/audio/reduce_latency.sh
 
 [Install]
