@@ -180,6 +180,7 @@ sudo nano /etc/systemd/system/reduce_latency.service
 ```
 [Unit]
 Description=reduce latency
+After=polkit.service gvfsd.service
 
 [Service]
 Type=oneshot
@@ -225,6 +226,7 @@ Description=run jack server
 [Service]
 Restart=always
 RestartSec=1
+#ExecStartPre=/bin/sleep 2
 User=pi
 Group=audio
 ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d sysdefault -r 44100 -p2048 -n3
