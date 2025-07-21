@@ -228,7 +228,7 @@ RestartSec=1
 #ExecStartPre=/bin/sleep 2
 User=pi
 Group=audio
-ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d sysdefault -r 44100 -p2048 -n3
+ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p2048 -n3
 
 [Install]
 WantedBy=multi-user.target
