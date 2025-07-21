@@ -16,10 +16,8 @@ blacklist btbcm
 blacklist hci_uart
 EOF
 
-#sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy gvfs gvfs-daemons gvfs-backends gvfs-fuse
+sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy 
  
-sudo apt purge --auto-remove  pulseaudio 
-
 #disable leds
 sudo tee -a /boot/firmware/config.txt > /dev/null <<EOF
 # Disable ACT LED (SD card activity)
