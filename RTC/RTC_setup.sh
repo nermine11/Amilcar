@@ -1,5 +1,11 @@
-sudo bash -c "echo '#added to charge the RTC battery' >> /boot/firmware/config.txt"
-sudo bash -c "echo 'dtparam=rtc_bbat_vchg=3000000 >> /boot/firmware/config.txt"
+grep -Fxq '#added to charge the RTC battery' /boot/firmware/config.txt || \
+echo '#added to charge the RTC battery' | sudo tee -a /boot/firmware/config.txt > /dev/null
+grep -Fxq 'dtparam=rtc_bbat_vchg=3000000' /boot/firmware/config.txt || \
+echo 'dtparam=rtc_bbat_vchg=3000000' | sudo tee -a /boot/firmware/config.txt > /dev/null
+#disable RTC of rPi 5
+grep -Fxq 'dtparam=rtc=off' /boot/firmware/config.txt || \
+echo 'dtparam=rtc=off' | sudo tee -a /boot/firmware/config.txt > /dev/null
+
 sudo reboot
 
 #Disable the "fake hwclock" which interferes with the 'real' hwclock
