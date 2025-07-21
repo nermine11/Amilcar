@@ -217,7 +217,7 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
     #concatenate all audio data
     audio_data = np.concatenate(buffer_data, axis=0)
     #write data using standard WAV RIFF
-    sf.write(filename, audio_data, samplerate)
+    sf.write(filename, audio_data, samplerate, subtype='PCM_32')
     # prepare and embed cue markers
     cue_points = []
     for timestamp, sample_offset, gps_position in markers:
