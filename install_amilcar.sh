@@ -10,9 +10,10 @@ apt install -y python3-venv libjack-jackd2-dev jackd2 i2c-tools
 
 
 # install and activate the virtual environment
-virtualenv -p /usr/bin/python3 venv
+python3 -m venv venv
 source venv/bin/activate
 
-# Install the Python packages needed by the SmartMesh SDK inside the venv
+# Install the Python packages needed by Amilcar inside the venv
+venv/bin/pip install --upgrade pip
 venv/bin/pip install -r /home/pi/Amilcar/requirements.txt --default-timeout=100
 
