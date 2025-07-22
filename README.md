@@ -159,10 +159,10 @@ sudo reboot
 ```
 
 ### Step 4: configure ADC+DAC converter
-***Run audio_setup.sh***
+***Run setup_audip.sh***
 ```
- sudo chmod +x audio/audio_setup.sh
-./audio/audio_setup.sh
+ sudo chmod +x audio/setup_audio.sh
+./audio/setup_audio.sh
 ```
 
 ### Step 7: reduce latency
