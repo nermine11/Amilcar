@@ -61,7 +61,7 @@ Description=install setup
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart==/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/install_amilcar.sh
+ExecStart=/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/install_amilcar.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -225,7 +225,6 @@ Description=run jack server
 [Service]
 Restart=always
 RestartSec=1
-#ExecStartPre=/bin/sleep 2
 User=pi
 Group=audio
 ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p2048 -n3
@@ -285,18 +284,58 @@ WantedBy=multi-user.target
 ```
 sudo systemctl daemon-reload
 ```
+
+### Step 9: add a timer for record audio
+
+We want to start recording after 10 minutes of reboot, so that the 3 rPis could start more or less at the same time, and to give some time for GPS fix, so we will use a  .timer systemd unit file
+
+
+**Create a systemd Service File**
+```
+sudo nano /etc/systemd/system/record_audio.timer
+```
+
+**Paste the following content:**
+```
+[Unit]
+Description=timer for Hydrophone Audio Recorder
+
+[Timer]
+OnBootSec=10min
+Unit=record_audio.service
+
+[Install]
+WantedBy=timers.target
+```
+**save and exit**
+
+**Reload the service files to include the new service.**
+```
+sudo systemctl daemon-reload
+```
+**Disable record_audio.service so it don't start on boot
+```
+sudo systemctl disable record_audio.service
+
+```
+
 **Start and enable the service:**
 ```
-sudo systemctl start record_audio.service
+sudo systemctl start record_audio.timer
 ```
 
 **And automatically get it to start on boot:**
 ```
-sudo systemctl enable record_audio.service
+sudo systemctl enable record_audio.timer
 ```
 
 **Reboot the Raspberry**
 ```
 sudo reboot
 ```
+
+
+
+
+
 
