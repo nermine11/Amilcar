@@ -158,6 +158,13 @@ sudo usermod -aG audio pi
 sudo reboot
 ```
 
+### Step 4: configure ADC+DAC converter
+***Run audio_setup.sh***
+```
+ sudo chmod +x audio/audio_setup.sh
+./audio/audio_setup.sh
+```
+
 ### Step 7: reduce latency
 
 **Make  the file reduce_latency_on_boot.sh executable and run it**
