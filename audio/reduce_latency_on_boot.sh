@@ -7,9 +7,6 @@ grep -q '^over_voltage=6' /boot/firmware/config.txt || echo 'over_voltage=6     
 grep -q '^gpu_freq=250' /boot/firmware/config.txt || echo 'gpu_freq=250         # GPU clock (safe)' | sudo tee -a /boot/firmware/config.txt > /dev/null
 
 sudo tee /etc/modprobe.d/raspi-blacklist.conf > /dev/null <<EOF
-# WiFi
-#blacklist brcmfmac
-#blacklist brcmutil
 
 # Bluetooth
 blacklist btbcm
@@ -17,18 +14,6 @@ blacklist hci_uart
 EOF
 
 sudo apt purge --auto-remove pi-greeter lightdm lx* gvfs*  xserver-common policykit-1 gnome* x11* openbox* xdg*  pulseaudio  triggerhappy 
- 
-#disable leds
-sudo tee -a /boot/firmware/config.txt > /dev/null <<EOF
-# Disable ACT LED (SD card activity)
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=off
-
-# Disable PWR LED (power status)
-dtparam=pwr_led_trigger=none
-dtparam=pwr_led_activelow=off
-EOF
-
 
 SERVICES=(
   systemd-timesyncd        # stop the timesync service
