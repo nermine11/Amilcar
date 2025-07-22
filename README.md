@@ -61,7 +61,7 @@ Description=install setup
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/install_amilcar.sh
+ExecStart=/home/pi/Amilcar/install_amilcar.sh
 
 [Install]
 WantedBy=multi-user.target
