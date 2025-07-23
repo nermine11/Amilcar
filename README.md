@@ -47,45 +47,10 @@ Unzip the content of the release in the /home/pi/Amilcar folder and run the foll
 ```
 sudo chmod +x install_amilcar.sh
 ```
-
-**Create a systemd Service File**
+**Run**
 ```
-sudo nano /etc/systemd/system/install_amilcar.service
+source install_amilcar.sh
 ```
-
-**Paste the following content:**
-```
-[Unit]
-Description=install setup
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/home/pi/Amilcar/install_amilcar.sh
-
-[Install]
-WantedBy=multi-user.target
-```
-**save and exit**
-
-**Reload the service files to include the new service.**
-```
-sudo systemctl daemon-reload
-```
-**Start and enable the service:**
-```
-sudo systemctl start install_amilcar.service
-```
-**And automatically get it to start on boot:**
-```
-sudo systemctl enable install_amilcar.service
-```
-
-**Reboot the Raspberry**
-```
-sudo reboot
-```
-
 ### Step 3: Set the internal time of the rPi as GPS time, 
 ***Run GPS_setup.sh***
   ```
@@ -95,8 +60,10 @@ sudo reboot
 Comment manually to not use Interent time servers the content of 
 - #debian vendor zone
 - #use time sources from dhcp
-- #use ntp sources found in etc/chrony/sources.d
-  
+- #use ntp sources 
+found in /etc/chrony/chrony.conf
+
+- check /GPS to see how to choose the offsett 
  
 ### Step 4: Setup the RTC 
 ***Run RTC_setup.sh***
@@ -216,8 +183,15 @@ sudo systemctl enable reduce_latency.service
 ```
 sudo reboot
 ```
+### Step 8: Increase audio volume
 
-### Step 8: run the jack server to record audio
+check /audio for more details
+```
+amixer -D hw: 0 cset name='ADC Capture Volume' 96,96
+sudo alsactl store
+```
+
+### Step 9: run the jack server to record audio
 
 **Create a systemd Service File**
 ```
@@ -260,7 +234,7 @@ sudo systemctl enable jack_server.service
 sudo reboot
 ```
 
-### Step 9: record audio
+### Step 10: record audio
 
 **Create a systemd Service File**
 ```
@@ -292,7 +266,7 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 ```
 
-### Step 9: add a timer for record audio
+### Step 11: add a timer for record audio
 
 We want to start recording after 10 minutes of reboot, so that the 3 rPis could start more or less at the same time, and to give some time for GPS fix, so we will use a  .timer systemd unit file
 
