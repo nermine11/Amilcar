@@ -11,7 +11,7 @@ wget https://www.kernel.org/pub/linux/kernel/projects/rt/6.12/older/patch-6.12-r
 gunzip patch-6.12-rc1-rt1.patch.gz
 cat patch--6.12-rc1-rt1.patch | patch -p1
 cd ~
-sudo apt install bc bison flex libssl-dev make
+sudo apt install libncurses5-dev flex build-essential bison libssl-dev bc make
 #for rPi 5
 cd linux
 KERNEL=kernel_2712
