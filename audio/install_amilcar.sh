@@ -23,6 +23,9 @@ chmod +x GPS/GPS_setup.sh
 # Step 6: Add user 'pi' to audio group 
 sudo usermod -aG audio pi
 
+# Step 6: isolate CPU 3
+grep -q 'isolcpus=3' /boot/firmware/cmdline.txt || sudo sed -i 's/$/ isolcpus=3/' /boot/firmware/cmdline.txt
+
 # Step 7: Configure ADC+DAC PRO
 chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
@@ -62,7 +65,8 @@ Restart=always
 RestartSec=1
 User=pi
 Group=audio
-ExecStart=/usr/bin/jackd -R -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p2048 -n2
+ExecStart=/usr/bin/jackd -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p 2048 -n2 -i2 -o2
+CPUAffinity=3
 
 [Install]
 WantedBy=multi-user.target
@@ -86,6 +90,7 @@ Restart=always
 RestartSec=1
 User=pi
 Group=audio
+CPUAffinity=3
 
 [Install]
 WantedBy=multi-user.target
