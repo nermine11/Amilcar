@@ -5,12 +5,12 @@
 while true; do
     if gpspipe -w -n 5 | grep -q '"mode":3'; then
         hwclock -w
-        echo " GPS fix: using GPS time, updating RTC" >> /tmp/gps-rtc.log
+        echo " GPS fix: using GPS time, updating RTC" >> /home/pi/Amilcar/RTC/gps-rtc.log
 
     # no GPS fix use RTC
     else
        hwclock -s
-       echo "$  no GPS fix: using RTC" >> /tmp/gps-rtc.log
+       echo "$  no GPS fix: using RTC" >> /home/pi/Amilcar/RTC/gps-rtc.log
     fi
     sleep 1
 done

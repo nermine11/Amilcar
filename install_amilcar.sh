@@ -133,6 +133,8 @@ Restart=always
 RestartSec=1
 User=pi
 Group=audio
+LimitRTPRIO=infinity
+LimitMEMLOCK=infinity
 CPUAffinity=3
 
 [Install]
