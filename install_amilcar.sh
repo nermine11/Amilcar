@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e  # Stop on first error
 
 #Step 1: Clone or unzip Amilcar repo ===
 cd /home/pi/Amilcar
