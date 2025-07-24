@@ -66,7 +66,7 @@ sudo systemctl enable --now rtc-gps-sync.timer
 sudo usermod -aG audio pi
 
 # Step 6: isolate CPU 3
-grep -q 'isolcpus=3' /boot/firmware/cmdline.txt || sudo sed -i 's/$/ isolcpus=3/' /boot/firmware/cmdline.txt
+grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo sed -i 's/$/ isolcpus=3 nohz_full=3 rcu_nocbs=3/' /boot/firmware/cmdline.txt
 
 # Step 7: Configure ADC+DAC PRO
 sudo chmod +x audio/setup_audio.sh
