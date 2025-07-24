@@ -101,11 +101,14 @@ cat <<EOF | sudo tee /etc/systemd/system/jack_server.service
 Description=run jack server
 
 [Service]
-Restart=always
-RestartSec=1
 User=pi
 Group=audio
 ExecStart=/usr/bin/jackd -R -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p 2048 -n2 -i2 -o2
+Environment=JACK_NO_AUDIO_RESERVATION=1
+Restart=always
+RestartSec=2
+LimitRTPRIO=95
+LimitMEMLOCK=infinity
 CPUAffinity=3
 
 [Install]
