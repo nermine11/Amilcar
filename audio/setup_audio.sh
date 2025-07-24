@@ -10,4 +10,3 @@ sudo sed -i 's/^dtoverlay=vc4-kms-v3d$/dtoverlay=vc4-kms-v3d,noaudio/' /boot/fir
 sudo bash -c "echo 'dtoverlay=hifiberry-dacplusadcpro' >> /boot/firmware/config.txt"
 # might need to add
 #sudo bash -c "echo 'force_eeprom_read=0 >> /boot/firmware/config.txt"
-sudo reboot

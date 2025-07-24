@@ -22,8 +22,8 @@ EOF
 #sudo apt purge --auto-remove gnome* x11* 
 #sudo apt purge --auto-remove openbox* 
 #sudo apt purge --auto-remove xdg*  
-#sudo apt purge --auto-remove pulseaudio  
-#sudo apt purge --auto-remove triggerhappy 
+sudo apt purge --auto-remove pulseaudio  
+sudo apt purge --auto-remove triggerhappy 
 
 
 SERVICES=(

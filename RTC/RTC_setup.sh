@@ -5,8 +5,7 @@ echo 'dtparam=rtc_bbat_vchg=3000000' | sudo tee -a /boot/firmware/config.txt > /
 #disable RTC of rPi 5
 grep -Fxq 'dtparam=rtc=off' /boot/firmware/config.txt || \
 echo 'dtparam=rtc=off' | sudo tee -a /boot/firmware/config.txt > /dev/null
-sudo rpi-update
-sudo reboot
+
 
 #Disable the "fake hwclock" which interferes with the 'real' hwclock
 sudo apt-get -y remove fake-hwclock

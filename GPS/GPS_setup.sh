@@ -90,4 +90,3 @@ sudo service gpsd restart
 
 #Restart chrony
 sudo systemctl restart chrony
-sudo reboot
