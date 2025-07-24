@@ -37,8 +37,8 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl start RTC_GPS_sync.service
-sudo systemctl enable --now RTC_GPS_sync.service
+sudo systemctl start rtc-gps-sync.service
+sudo systemctl enable --now rtc-gps-sync.service
 
 
 #set timer for RTC
