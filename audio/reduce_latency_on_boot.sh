@@ -7,6 +7,9 @@ grep -q '^over_voltage=6' /boot/firmware/config.txt || echo 'over_voltage=6     
 grep -q '^gpu_freq=250' /boot/firmware/config.txt || echo 'gpu_freq=250         # GPU clock (safe)' | sudo tee -a /boot/firmware/config.txt > /dev/null
 
 sudo tee /etc/modprobe.d/raspi-blacklist.conf > /dev/null <<EOF
+# WiFi
+#blacklist brcmfmac
+#blacklist brcmutil
 
 # Bluetooth
 blacklist btbcm
@@ -24,6 +27,8 @@ EOF
 #sudo apt purge --auto-remove xdg*  
 sudo apt purge --auto-remove pulseaudio  
 sudo apt purge --auto-remove triggerhappy 
+#sudo systemctl stop NetworkManager
+#sudo systemctl disable NetworkManager
 
 
 SERVICES=(
@@ -31,7 +36,7 @@ SERVICES=(
   triggerhappy             # Stop the triggerhappy service
   bluetooth                # Stop the bluetooth service
   ModemManager             # Handles cellular USB modems
-  #wpa_supplicant          # Wi-Fi connection manager
+  wpa_supplicant          # Wi-Fi connection manager
   avahi-daemon             #For local hostname discovery
   cups                     #printing service
   cron                     # scheduled tasks not used
@@ -40,10 +45,8 @@ SERVICES=(
   apt-daily.service        # auto checks for package updates
   apt-daily.timer          # auto checks for package updates
   apt-daily-upgrade.timer  # auto checks for package updates
-  #alsa-restore
   hciuart                  #Initializes Bluetooth chip over UART
-  #keyboard-setup          #configures keyboard layout setup on boot## Stop the polkitd service. Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
-  #polkit                   #controlling system-wide privileges
+  #keyboard-setup          #configures keyboard layout setup on boot Warning: this can cause unpredictable behaviour when running a desktop environment on the RPi
 )
 
 for svc in "${SERVICES[@]}"; do

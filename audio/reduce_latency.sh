@@ -16,3 +16,6 @@ mount -o remount,size=128M /dev/shm
 #/opt/vc/bin/tvservice -o
 #block wifi
 #rfkill block wifi
+#sudo service ifplugd stop
+#sudo killall ifplugd
+#sudo service networking stop
