@@ -13,17 +13,17 @@ blacklist btbcm
 blacklist hci_uart
 EOF
 
-sudo apt purge --auto-remove pi-greeter 
-sudo apt purge --auto-remove lightdm 
-sudo apt purge --auto-remove lx*
-sudo apt purge --auto-remove gvfs*  
-sudo apt purge --auto-remove xserver-common 
-sudo apt purge --auto-remove policykit-1 
-sudo apt purge --auto-remove gnome* x11* 
-sudo apt purge --auto-remove openbox* 
-sudo apt purge --auto-remove xdg*  
-sudo apt purge --auto-remove pulseaudio  
-sudo apt purge --auto-remove triggerhappy 
+#sudo apt purge --auto-remove pi-greeter 
+#sudo apt purge --auto-remove lightdm 
+#sudo apt purge --auto-remove lx*
+#sudo apt purge --auto-remove gvfs*  
+#sudo apt purge --auto-remove xserver-common 
+#sudo apt purge --auto-remove policykit-1 
+#sudo apt purge --auto-remove gnome* x11* 
+#sudo apt purge --auto-remove openbox* 
+#sudo apt purge --auto-remove xdg*  
+#sudo apt purge --auto-remove pulseaudio  
+#sudo apt purge --auto-remove triggerhappy 
 
 
 SERVICES=(
