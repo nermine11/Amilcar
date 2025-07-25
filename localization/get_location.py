@@ -14,6 +14,7 @@ active_gps_data = {}   # current active dictionary
 buffer_lock = threading.Lock()
 event = threading.Event()
 last_second = [-1]
+
 # === Connect to gpsd ===
 try:
     gpsd.connect()
@@ -24,7 +25,7 @@ except ConnectionRefusedError:
 
 def gps_poll():
     """
-    Poll GPSD every second and store latest fix in shared variable.
+    poll GPSD every second and store latest position
     """
     global latest_gps_position
     while gps_enabled and not event.is_set():
@@ -72,15 +73,11 @@ def gps_logger():
 
 def save_json_to_file(data, filename):
     """
-    write data to JSON using a temp file + rename.
+    write data to JSON directly.
     """
     try:
-        tmp = filename + ".tmp"
-        with open(tmp, "w") as f:
+        with open(filename, "w") as f:
             json.dump(data, f, indent=2)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, filename)
     except Exception as e:
         pass
 
@@ -101,10 +98,6 @@ def gps_saver():
             threading.Thread(target=save_json_to_file, args=(buffer_to_save, filename), daemon=True).start()
             # new filename for next hour
             filename, current_hour = get_current_hour_filename()
-        # every second: write active buffer to current file in case the rPi shuts down
-        #while recording
-        with buffer_lock:
-            save_json_to_file(dict(active_gps_data), filename)
         time.sleep(1)
     # Final flush on shutdown (CTRL C)
     with buffer_lock:
