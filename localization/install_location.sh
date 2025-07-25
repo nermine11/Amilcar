@@ -10,7 +10,7 @@ grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo 
 
 # Step 2: Reduce latency 
 sudo chmod +x /home/pi/Amilcar/audio/reduce_latency_on_boot.sh
-./home/pi/Amilcar/audio/reduce_latency_on_boot.sh
+source /home/pi/Amilcar/audio/reduce_latency_on_boot.sh
 
 sudo chmod +x /home/pi/Amilcar/audio/reduce_latency.sh
 cat <<EOF | sudo tee /etc/systemd/system/reduce_latency.service
@@ -37,7 +37,7 @@ source install_setup.sh
 
 # Step 4: Setup GPS time
 sudo chmod +x /home/pi/Amilcar/GPS/GPS_setup.sh
-./home/pi/Amilcar/GPS/GPS_setup.sh
+source /home/pi/Amilcar/GPS/GPS_setup.sh
 
 #Please manually edit /etc/chrony/chrony.conf to comment the following lines:"
 ##debian vendor zone"
