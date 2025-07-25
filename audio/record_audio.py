@@ -199,9 +199,9 @@ def get_current_hour_filename():
     generates full output filename like ./recordings/20250715/hydrophone_20250715_13.wav
     """
     now      = time.gmtime()
-    folder_by_day   = os.path.join(base_dir, time.strftime("%Y%m%d", now))
+    folder_by_day   = os.path.join(base_dir, time.strftime("%Y-%m-%d", now))
     os.makedirs(folder_by_day, exist_ok=True)
-    filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%M%S.wav",now))
+    filename = os.path.join(folder_by_day, time.strftime("hydrophone_%H%-M-%S.wav",now))
     return filename, time.time()
 
 def save_audio_and_markers(buffer_data, markers, filename:str):
@@ -222,7 +222,7 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
     cue_points = []
     for timestamp, sample_offset, gps_position in markers:
         ms    = int((timestamp%1) * 1000)
-        label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H%M%S', time.gmtime(timestamp))}.{ms}"
+        label = f"sample {sample_offset} at {time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(timestamp))}.{ms:04d}"
         if gps_position:
             label += f" (position: {gps_position[0]}, {gps_position[1]})"
         else:

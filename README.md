@@ -11,9 +11,8 @@ NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 -  GPS antenna for better time accuracy
 -  Hydrophone
 -  ADC/DAC pro
--  Adafruit DS3231 RTC
 
-We are using GPS to set the internal time of the rPi, and using RTC as fallback in case we lose GPS fix.
+We are using GPS to set the internal time of the rPi, and using Raspberry Pi 5 RTC as fallback in case we lose GPS fix.
 
 The RTC is disciplined by GPS every second.
 
