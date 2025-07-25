@@ -13,7 +13,7 @@ latest_gps_position = None
 active_gps_data = {}   # current active dictionary
 buffer_lock = threading.Lock()
 event = threading.Event()
-
+last_second = [-1]
 # === Connect to gpsd ===
 try:
     gpsd.connect()
@@ -53,30 +53,26 @@ def gps_logger():
     """
     Every second, record the current GPS fix (from gps_poll thread).
     """
-    last_second = -1
+    global last_second
     while not event.is_set():
         timestamp = time.time()
         current_second = int(timestamp)
-        if current_second != last_second:
-            last_second = current_second
+        if current_second != last_second[0]:
+            last_second[0] = current_second
             ms = int((timestamp % 1) * 1000)
             timestamp_str = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(timestamp)) + f".{ms:03d}"
-
             with gps_lock:
                 position = latest_gps_position
-
             with buffer_lock:
                 active_gps_data[timestamp_str] = {
                     "lat": position[0] if position else None,
                     "lon": position[1] if position else None
                 }
-
         time.sleep(0.01)
-
 
 def save_json_to_file(data, filename):
     """
-    Atomically writes a dictionary to JSON using a temp file + rename.
+    write data to JSON using a temp file + rename.
     """
     try:
         tmp = filename + ".tmp"
@@ -88,38 +84,34 @@ def save_json_to_file(data, filename):
     except Exception as e:
         pass
 
-
 def gps_saver():
     """
     Every second: save current active buffer to disk.
     Every hour: swap buffers and rotate filename.
     """
     filename, current_hour = get_current_hour_filename()
-
     while not event.is_set():
         now = time.time()
-
-        # hourly buffer/file rotation
+        # changing the file every hour
         if now - current_hour >= 3600:
             with buffer_lock:
                 buffer_to_save = dict(active_gps_data)
                 active_gps_data.clear()
-            # Save previous hour's file
+            #save file in a thread alone because it contains an hour recording so heavy
             threading.Thread(target=save_json_to_file, args=(buffer_to_save, filename), daemon=True).start()
-            # New filename for next hour
+            # new filename for next hour
             filename, current_hour = get_current_hour_filename()
-        # Every second: write active buffer to current file
+        # every second: write active buffer to current file in case the rPi shuts down
+        #while recording
         with buffer_lock:
             save_json_to_file(dict(active_gps_data), filename)
         time.sleep(1)
-    # Final flush on shutdown
+    # Final flush on shutdown (CTRL C)
     with buffer_lock:
         if active_gps_data:
             save_json_to_file(dict(active_gps_data), filename)
 
-
 # === Start Threads ===
-
 threading.Thread(target=gps_poll, daemon=True).start()
 threading.Thread(target=gps_logger, daemon=True).start()
 threading.Thread(target=gps_saver, daemon=True).start()

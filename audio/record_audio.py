@@ -229,6 +229,16 @@ def save_audio_and_markers(buffer_data, markers, filename:str):
             label += "_,_"
         cue_points.append((sample_offset, label))
     write_cue_markers(filename, cue_points)
+
+def periodic_temp_saver(temp_filename):
+    """
+    Every 10 seconds, save a temporary version of the audio and markers.
+    Prevents full data loss on power loss.
+    """
+    while not event.is_set():
+        with buffer_lock:
+            save_audio_and_markers(active_frames, active_markers, temp_filename)
+        time.sleep(10)
     
 # ========== Start Recording ==========
 
@@ -256,6 +266,9 @@ with client:
             print(f" Failed to connect {port_name}: {e}")
     #intial filename and hour
     output_filename, current_hour = get_current_hour_filename()
+    base, extention = os.path.splitext(output_filename)
+    temp_filename = base + "_tmp" + extention
+    threading.Thread(target=periodic_temp_saver, args=(temp_filename,), daemon=True).start()
     try:
         #checks if a shutdown flag has been raised(CTRL c or power cut)
         while not event.is_set():
@@ -273,10 +286,15 @@ with client:
                 save_thread.start()
                 #update filename and hour
                 output_filename, current_hour = get_current_hour_filename()
+                base, extention = os.path.splitext(output_filename)
+                temp_filename = base + "_tmp" + extention
                 time.sleep(0.1)
     except KeyboardInterrupt:
         event.set() # shutdown will be called
-    
+
 #if CTRL_C has been pressed in the middle of recording
 with buffer_lock:
     save_audio_and_markers(active_frames, active_markers, output_filename)
+    # If a temp file exists, promote it to final filename
+    if os.path.exists(temp_filename):
+        os.replace(temp_filename, output_filename)
