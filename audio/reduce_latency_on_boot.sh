@@ -27,8 +27,8 @@ EOF
 #sudo apt purge --auto-remove xdg*  
 sudo apt purge --auto-remove pulseaudio  
 sudo apt purge --auto-remove triggerhappy 
-#sudo systemctl stop NetworkManager
-#sudo systemctl disable NetworkManager
+sudo systemctl stop NetworkManager
+sudo systemctl disable NetworkManager
 
 
 SERVICES=(
@@ -39,8 +39,8 @@ SERVICES=(
   wpa_supplicant          # Wi-Fi connection manager
   avahi-daemon             #For local hostname discovery
   cups                     #printing service
-  cron                     # scheduled tasks not used
-  anacron                  # scheduled tasks not used
+  #cron                     # scheduled tasks not used
+  #anacron                  # scheduled tasks not used
   man-db.timer             #Updates man page 
   apt-daily.service        # auto checks for package updates
   apt-daily.timer          # auto checks for package updates
