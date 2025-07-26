@@ -27,8 +27,8 @@ EOF
 #sudo apt purge --auto-remove xdg*  
 sudo apt purge --auto-remove pulseaudio  
 sudo apt purge --auto-remove triggerhappy 
-sudo systemctl stop NetworkManager
-sudo systemctl disable NetworkManager
+#sudo systemctl stop NetworkManager
+#sudo systemctl disable NetworkManager
 
 
 SERVICES=(
