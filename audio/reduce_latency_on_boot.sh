@@ -50,6 +50,6 @@ SERVICES=(
 )
 
 for svc in "${SERVICES[@]}"; do
-  systemctl stop "$svc" 2>/dev/null || true
-  systemctl disable "$svc" 2>/dev/null || true
+  sudo systemctl stop "$svc" 2>/dev/null || true
+  sudo systemctl disable "$svc" 2>/dev/null || true
 done
