@@ -18,6 +18,8 @@ The RTC is disciplined by GPS every second.
 
 ## Configuring AMILCAR
 
+
+
 ### Step 1: Flash Operating System to the micro-SD card
 
 Depending on your computer operating system, the installation procedure can change. 
@@ -37,6 +39,20 @@ On the first boot of the OS you need to fill in the location and language info, 
 
 For the username type: `pi`
 For the password type: `raspberry`
+
+### Step 2: Enable SSH using Ethernet cable
+
+- Check the name of ethernet interface using:
+```
+nmcli device status
+```
+then run the following command to be able to SSH from your computer to the rPi using an ethernet cable
+```
+sudo nmcli con mod "name of ethernet interface" ipv4.addresses 192.168.50.2/24 ipv4.gateway 192.168.50.1 ipv4.dns 8.8.8.8 ipv4.method manual
+
+```
+
+
 
 ### Step 2: Download and install Amilcar 
 From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
