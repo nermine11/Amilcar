@@ -29,7 +29,7 @@ check ./localization for more details on the configuration
 - We use rPi 5 for its better time accuracy, rPi5 requires 5V/5A or 5v/3A while reducing USB current so we chose 5V/3A power banks.
 - Recording in real-time and getting GPS time, consumes lots of CPU power, the rPi gets very hot (up to 83 degrees) and as it throttles at 80 degress, it can shutdown on its own
  so better use a cooling fan!
-- Sometimes we get an IO error and everything blocksbecause of the load on the rPi, 
+- Sometimes we get an IO error and everything blocks because of the load on the rPi, 
 if you want a system that will stay all the time in the sea, look for other options than the rPi as it already requires many tweaking to record in real time,
 -There will always be some jitter, meaning imperfect synchronization between the recordings from different Raspberry Pis (in our case, up to 25 ms). 
 This jitter cannot be corrected in software, it must be addressed through hardware-level synchronization.
