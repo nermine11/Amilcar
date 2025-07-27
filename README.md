@@ -12,6 +12,7 @@ NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 -  3 Hydrophone
 -  3 ADC/DAC pro
 -  3 power banks
+-  3 rPi5 cooling fans
 
 
 We are using GPS to set the internal time of the rPi, and using Raspberry Pi 5 RTC as fallback in case we lose GPS fix.
