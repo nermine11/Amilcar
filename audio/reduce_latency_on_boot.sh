@@ -27,8 +27,8 @@ EOF
 #sudo apt purge --auto-remove xdg*  
 sudo apt purge --auto-remove pulseaudio  
 sudo apt purge --auto-remove triggerhappy 
-#sudo systemctl stop NetworkManager
-#sudo systemctl disable NetworkManager
+#to disable the desktop, to enable it back run, sudo systemctl set-default graphical.target
+sudo systemctl set-default multi-user.target
 
 
 SERVICES=(
