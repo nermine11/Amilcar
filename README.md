@@ -6,18 +6,22 @@ It is part of **Falco/OpenSwarm** collabration to count the number of motor boat
 NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
 ## Hardware requirements
--  Raspberry Pi 5 for better time precision
--  Adafuit ultimate GPS HAT
--  GPS antenna for better time accuracy
--  Hydrophone
--  ADC/DAC pro
+-  3 Raspberry Pi 5 for better time precision
+-  3 Adafuit ultimate GPS HAT
+-  3 GPS antennas for better time accuracy, use the same GPS antenna for better accurancy
+-  3 Hydrophone
+-  3 ADC/DAC pro
+-  3 power banks
+
 
 We are using GPS to set the internal time of the rPi, and using Raspberry Pi 5 RTC as fallback in case we lose GPS fix.
 
 The RTC is disciplined by GPS every second.
 
-## Configuring AMILCAR
+We will also have a Raspberry Pi to locate the boat every second,
+check ./localization for more details
 
+## Configuring AMILCAR
 
 
 ### Step 1: Flash Operating System to the micro-SD card
@@ -52,12 +56,23 @@ sudo nmcli con mod "name of ethernet interface" ipv4.addresses 192.168.50.2/24 i
 
 ```
 
-
-
-### Step 2: Download and install Amilcar 
+### Step 2: Download Amilcar and install real time kernel
 From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
-Unzip the content of the release in the /home/pi/Amilcar folder and run the following commands:
+Unzip the content of the release in the /home/pi/Amilcar folder 
+We are going to record in real time so we to be able to do that, we will install a real time kernel
+instead of rPi kernel which is best-effort,
+the difference is a real time kernel will give absolute priority to our recording while 
+best-effort can have milliseconds of latency and allocate time instead for other services
+go to ./install_real_time_kernel_for_linux and 
+follow the instructions in the readme
+
+
+### Step 2:  install Amilcar 
+ In install_amilcar script, we create system services and run the scripts for GPS, RTC, and reduce latency as explained below
+The service descriptions below are not up to date check install_amilcar.sh instead
+
+run the following commands:
 **make the file executable**
 ```
 sudo chmod +x install_amilcar.sh
@@ -66,7 +81,15 @@ sudo chmod +x install_amilcar.sh
 ```
 source install_amilcar.sh
 ```
-### Step 3: Set the internal time of the rPi as GPS time, 
+
+And that's it now the GPS, RTC are set and the rPi will start recording,
+for more details on what install_amilcar script contains see below,
+Note: you only run install_amilcar.sh, what's below is only an explanation that is not the most
+up-to-date
+
+
+- Set the internal time of the rPi as GPS time
+  
 ***Run GPS_setup.sh***
   ```
  sudo chmod +x GPS/GPS_setup.sh
@@ -78,15 +101,10 @@ Comment manually to not use Interent time servers the content of
 - #use ntp sources 
 found in /etc/chrony/chrony.conf
 
-- check /GPS to see how to choose the offsett 
+- check ./GPS to see how to choose the offsett 
  
-### Step 4: Setup the RTC 
-***Run RTC_setup.sh***
-```
- sudo chmod +x RTC/RTC_setup.sh
-./RTC/RTC_setup.sh
-```
-### Step 5: Discipline the RTC using GPS and use RTC as fallback 
+
+### Step ': Discipline the RTC using GPS and use RTC as fallback 
 
 **Make  the file RTC_GPS_sync.sh executable**
 ```
@@ -140,14 +158,14 @@ sudo usermod -aG audio pi
 sudo reboot
 ```
 
-### Step 4: configure ADC+DAC converter
+### Step 7: configure ADC+DAC converter
 ***Run setup_audip.sh***
 ```
  sudo chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
 ```
 
-### Step 7: reduce latency
+### Step 8: reduce latency
 
 **Make  the file reduce_latency_on_boot.sh executable and run it**
 ```
