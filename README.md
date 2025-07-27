@@ -18,9 +18,12 @@ NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 We are using GPS to set the internal time of the rPi, and using Raspberry Pi 5 RTC as fallback in case we lose GPS fix.
 
 The RTC is disciplined by GPS every second.
+We are using JACK for real time recording with a python script check ./audio for more details on the recording
+
 
 We will also have a Raspberry Pi to locate the boat every second,
-check ./localization for more details
+check ./localization for more details on the configuration
+
 
 ## Configuring AMILCAR
 
@@ -35,7 +38,7 @@ From the link above download and install the Raspberry Pi Imager.
 In the Raspberry Pi Imager select:
 - Device           - Raspberry Pi 5,  
 - Operating System - Raspberry Pi OS (64-BIT)
-- Storage          - micro-SD card
+- Storage          - micro-SD card 256 GO minimum
 
 After flashing, insert the micro-SD into the Raspberry Pi. 
 Power ON the Raspberry and connect it to a screen with an HDMI cable, and connect a mouse and a keyboard.
@@ -56,8 +59,9 @@ then run the following command to be able to SSH from your computer to the rPi u
 sudo nmcli con mod "name of ethernet interface" ipv4.addresses 192.168.50.2/24 ipv4.gateway 192.168.50.1 ipv4.dns 8.8.8.8 ipv4.method manual
 
 ```
+better use different IP address for each rPi
 
-### Step 2: Download Amilcar and install real time kernel
+### Step 3: Download Amilcar and install real time kernel
 From your Raspberry Pi download the latest Release or clone the repository of Amilcar here: [https://github.com/nermine11/Amilcar] This repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
 Unzip the content of the release in the /home/pi/Amilcar folder 
@@ -69,8 +73,9 @@ go to ./install_real_time_kernel_for_linux and
 follow the instructions in the readme
 
 
-### Step 2:  install Amilcar 
- In install_amilcar script, we create system services and run the scripts for GPS, RTC, and reduce latency as explained below
+### Step 4:  install Amilcar 
+ In install_amilcar script, we create system services and run the scripts for GPS, RTC, and reduce latency as explained below,
+We reduce latency by running a RT kernel (real-time) by disabling many services, and running headles rPi, check reduce_latency scripts for more details
 The service descriptions below are not up to date check install_amilcar.sh instead
 
 run the following commands:
@@ -86,7 +91,7 @@ source install_amilcar.sh
 And that's it now the GPS, RTC are set and the rPi will start recording,
 for more details on what install_amilcar script contains see below,
 Note: you only run install_amilcar.sh, what's below is only an explanation that is not the most
-up-to-date
+up-to-date,
 
 
 - Set the internal time of the rPi as GPS time
@@ -153,20 +158,20 @@ sudo systemctl enable RTC_GPS_sync.service
 sudo reboot
 ```
 
-### Step 6: add audio group to user
+- Step 6: add audio group to user
 ```
 sudo usermod -aG audio pi
 sudo reboot
 ```
 
-### Step 7: configure ADC+DAC converter
+- Step 7: configure ADC+DAC converter
 ***Run setup_audip.sh***
 ```
  sudo chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
 ```
 
-### Step 8: reduce latency
+- Step 8: reduce latency
 
 **Make  the file reduce_latency_on_boot.sh executable and run it**
 ```
@@ -217,7 +222,7 @@ sudo systemctl enable reduce_latency.service
 ```
 sudo reboot
 ```
-### Step 8: Increase audio volume
+- Step 8: Increase audio volume
 
 check /audio for more details
 ```
@@ -225,7 +230,7 @@ amixer -D hw: 0 cset name='ADC Capture Volume' 96,96
 sudo alsactl store
 ```
 
-### Step 9: run the jack server to record audio
+- Step 9: run the jack server to record audio
 
 **Create a systemd Service File**
 ```
@@ -267,8 +272,7 @@ sudo systemctl enable jack_server.service
 ```
 sudo reboot
 ```
-
-### Step 10: record audio
+- Step 10: record audio
 
 **Create a systemd Service File**
 ```
@@ -300,7 +304,7 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 ```
 
-### Step 11: add a timer for record audio
+- Step 11: add a timer for record audio
 
 We want to start recording after 10 minutes of reboot, so that the 3 rPis could start more or less at the same time, and to give some time for GPS fix, so we will use a  .timer systemd unit file
 
@@ -349,7 +353,9 @@ sudo systemctl enable record_audio.timer
 sudo reboot
 ```
 
-
+##Ressources:
+ https://wiki.linuxaudio.org/wiki/raspberrypi : great discussion on running real time audio using Raspberry Pi and using JACK
+https://wiki.linuxaudio.org/wiki/system_configuration#do_i_really_need_a_real-time_kernel
 
 
 
