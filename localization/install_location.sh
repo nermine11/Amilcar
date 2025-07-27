@@ -115,7 +115,7 @@ cat <<EOF | sudo tee /etc/systemd/system/get_location.timer
 Description=timer for location server
 
 [Timer]
-OnBootSec=10min
+OnBootSec=15min
 Unit=get_location.service
 
 [Install]

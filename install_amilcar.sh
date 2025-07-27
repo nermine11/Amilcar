@@ -48,7 +48,7 @@ cat <<EOF | sudo tee /etc/systemd/system/rtc-gps-sync.timer
 Description=timer for RTC fallback
 
 [Timer]
-OnBootSec=10min
+OnBootSec=15min
 Unit=rtc-gps-sync.service
 
 [Install]
@@ -146,7 +146,7 @@ cat <<EOF | sudo tee /etc/systemd/system/record_audio.timer
 Description=timer for Hydrophone Audio Recorder
 
 [Timer]
-OnBootSec=10min
+OnBootSec=15min
 Unit=record_audio.service
 
 [Install]
