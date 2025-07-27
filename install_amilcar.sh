@@ -72,6 +72,11 @@ grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo 
 sudo chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
 
+# Step 8: augment the volume
+
+amixer -D hw: 0 cset name='ADC Capture Volume' 104,104
+sudo alsactl store 
+
 # Step 8: Reduce latency 
 sudo chmod +x audio/reduce_latency_on_boot.sh
 ./audio/reduce_latency_on_boot.sh
