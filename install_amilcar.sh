@@ -65,19 +65,19 @@ sudo systemctl enable --now rtc-gps-sync.timer
 # Step 6: Add user 'pi' to audio group 
 sudo usermod -aG audio pi
 
-# Step 6: isolate CPU 3
+# Step 7: isolate CPU 3
 grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo sed -i 's/$/ isolcpus=3 nohz_full=3 rcu_nocbs=3/' /boot/firmware/cmdline.txt
 
-# Step 7: Configure ADC+DAC PRO
+# Step 8: Configure ADC+DAC PRO
 sudo chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
 
-# Step 8: augment the volume
+# Step 9: augment the volume
 
 amixer -D hw:0 cset name='ADC Capture Volume' 104,104
 sudo alsactl store 
 
-# Step 8: Reduce latency 
+# Step 10: Reduce latency 
 sudo chmod +x audio/reduce_latency_on_boot.sh
 ./audio/reduce_latency_on_boot.sh
 
@@ -100,7 +100,7 @@ sudo systemctl start reduce_latency.service
 sudo systemctl enable --now reduce_latency.service
 
 
-# Step 10: Setup JACK server 
+# Step 11: Setup JACK server 
 cat <<EOF | sudo tee /etc/systemd/system/jack_server.service
 [Unit]
 Description=run jack server
@@ -124,7 +124,7 @@ sudo systemctl daemon-reload
 sudo systemctl start jack_server.service
 sudo systemctl enable --now jack_server.service
 
-#Step 11: Setup audio recording
+#Step 12: Setup audio recording
 cat <<EOF | sudo tee /etc/systemd/system/record_audio.service
 [Unit]
 Description=Hydrophone Audio Recorder
