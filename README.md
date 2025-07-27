@@ -1,13 +1,14 @@
 # Amilcar
 
 This setup is designed to run on a Raspberry Pi, synchronizing its internal clock with GPS time and recording audio- files with timestamps of each second using a hydrophone.
-It is part of **Falco/OpenSwarm** collabration to count the number of motor boats in marine protected areas
+It is part of **OpenSwarm** project to count the number of motor boats in marine protected areas,
+the data will be used by IMEC to train their machine learning algorithms.
 
 NOTE: this repository needs to be cloned or unzipped in `/home/pi/Amilcar`
 
 ## Hardware requirements
 -  3 Raspberry Pi 5 for better time precision
--  3 Adafuit ultimate GPS HAT
+-  3 Adafuit ultimate GPS HAT with CRC1220 small battery
 -  3 GPS antennas for better time accuracy, use the same GPS antenna for better accurancy
 -  3 Hydrophone
 -  3 ADC/DAC pro
@@ -23,6 +24,15 @@ We are using JACK for real time recording with a python script check ./audio for
 
 We will also have a Raspberry Pi to locate the boat every second,
 check ./localization for more details on the configuration
+
+## Some considerations:
+- We use rPi 5 for its better time accuracy, rPi5 requires 5V/5A or 5v/3A while reducing USB current so we chose 5V/3A power banks
+- the recording consumes lots of CPU power, the rPi gets very hot (83 degrees) and it throttles at 80 degress so better use a cooling fan!
+- Sometimes we get an IO error because of the load on the rPi, if you want a system that will stay all the time in the sea, look for other options than the rPi as it 
+already requires many tweaking to record in real time,
+- There will always be jitter so non perfect synchronization between the recordingd of the rPis (in our case 25ms) this jitter can't be adressed by the software 
+  but by hardware 
+
 
 
 ## Configuring AMILCAR
