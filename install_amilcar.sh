@@ -74,7 +74,7 @@ sudo chmod +x audio/setup_audio.sh
 
 # Step 8: augment the volume
 
-amixer -D hw: 0 cset name='ADC Capture Volume' 104,104
+amixer -D hw:0 cset name='ADC Capture Volume' 104,104
 sudo alsactl store 
 
 # Step 8: Reduce latency 
