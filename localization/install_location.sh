@@ -106,6 +106,7 @@ LimitRTPRIO=infinity
 LimitMEMLOCK=infinity
 CPUAffinity=3
 
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -123,7 +124,7 @@ WantedBy=timers.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl disable get_location.service
+sudo systemctl enable get_location.service
 sudo systemctl start get_location.timer
 sudo systemctl enable --now get_location.timer
 

@@ -159,7 +159,7 @@ WantedBy=timers.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl disable record_audio.service
+sudo systemctl enable record_audio.service
 sudo systemctl start record_audio.timer
 sudo systemctl enable --now record_audio.timer
 
