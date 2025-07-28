@@ -132,7 +132,7 @@ After=jack_server.service gpsd.service
 Wants=jack_server.service gpsd.service
 
 [Service]
-ExecStart=/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/audio/record_audio.py
+ExecStart=/home/pi/Amilcar/venv/bin/python /home/pi/Amilcar/audio/record_continously.py
 WorkingDirectory=/home/pi/Amilcar
 Restart=always
 RestartSec=1
