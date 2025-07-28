@@ -72,12 +72,11 @@ def gps_logger():
         time.sleep(0.01)
 
 def save_json_to_file(data, filename):
-    """
-    write data to JSON directly.
-    """
     try:
-        with open(filename, "w") as f:
+        tmp_filename = filename + ".tmp"
+        with open(tmp_filename, "w") as f:
             json.dump(data, f, indent=2)
+        os.replace(tmp_filename, filename) 
     except Exception as e:
         pass
 

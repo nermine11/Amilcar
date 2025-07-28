@@ -12,25 +12,6 @@ grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo 
 sudo chmod +x /home/pi/Amilcar/audio/reduce_latency_on_boot.sh
 source /home/pi/Amilcar/audio/reduce_latency_on_boot.sh
 
-sudo chmod +x /home/pi/Amilcar/audio/reduce_latency.sh
-cat <<EOF | sudo tee /etc/systemd/system/reduce_latency.service
-[Unit]
-Description=reduce latency
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/home/pi/Amilcar/audio/reduce_latency.sh
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl start reduce_latency.service
-sudo systemctl enable --now reduce_latency.service
-
-
 # Step 3: Install Amilcar ===
 sudo chmod +x install_setup.sh
 source install_setup.sh
@@ -107,6 +88,7 @@ LimitMEMLOCK=infinity
 CPUAffinity=3
 
 
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -128,4 +110,4 @@ sudo systemctl enable get_location.service
 sudo systemctl start get_location.timer
 sudo systemctl enable --now get_location.timer
 
-sudo reboot
+sync && sleep 5 && sudo reboot
