@@ -1,42 +1,32 @@
 #!/bin/bash
 
-#Step 1: Clone or unzip Amilcar repo ===
 cd /home/pi/Amilcar
 
-# Step 2: Install real time kernel
-
-# Step 3: Install Amilcar ===
+# === Step 1: Install Amilcar ===
 sudo chmod +x install_setup.sh
 source install_setup.sh
 
-# Step 4: Setup GPS time
+# === Step 2: Setup GPS time ===
 sudo chmod +x GPS/GPS_setup.sh
 ./GPS/GPS_setup.sh
 
-#Please manually edit /etc/chrony/chrony.conf to comment the following lines:"
-##debian vendor zone"
-##use time sources from dhcp"
-##use ntp sources found in /etc/chrony/chrony.conf"
+echo "===[ Reminder: edit /etc/chrony/chrony.conf manually to disable DHCP/NTP sources ]==="
 
-
-
-
-# Step 6: Add user 'pi' to audio group 
+# === Step 3: Add pi to audio group ===
 sudo usermod -aG audio pi
 
-# Step 7: isolate CPU 3
+# === Step 4: Isolate CPU 3 ===
 grep -q 'isolcpus=3 nohz_full=3 rcu_nocbs=3' /boot/firmware/cmdline.txt || sudo sed -i 's/$/ isolcpus=3 nohz_full=3 rcu_nocbs=3/' /boot/firmware/cmdline.txt
 
-# Step 8: Configure ADC+DAC PRO
+# === Step 5: Configure ADC+DAC PRO ===
 sudo chmod +x audio/setup_audio.sh
 ./audio/setup_audio.sh
 
-# Step 9: augment the volume
-
+# === Step 6: Set ADC volume ===
 amixer -D hw:0 cset name='ADC Capture Volume' 96,96
-sudo alsactl store 
+sudo alsactl store
 
-# Step 10: Reduce latency 
+# === Step 7: Reduce latency (on boot and now) ===
 sudo chmod +x audio/reduce_latency_on_boot.sh
 ./audio/reduce_latency_on_boot.sh
 
@@ -54,12 +44,7 @@ ExecStart=/home/pi/Amilcar/audio/reduce_latency.sh
 WantedBy=multi-user.target
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl start reduce_latency.service
-sudo systemctl enable --now reduce_latency.service
-
-
-# Step 11: Setup JACK server 
+# === Step 8: JACK server service ===
 cat <<EOF | sudo tee /etc/systemd/system/jack_server.service
 [Unit]
 Description=run jack server
@@ -79,11 +64,7 @@ CPUAffinity=3
 WantedBy=multi-user.target
 EOF
 
-sudo systemctl daemon-reload
-sudo systemctl start jack_server.service
-sudo systemctl enable --now jack_server.service
-
-#Step 12: Setup audio recording
+# === Step 9: Audio recorder service and timer ===
 cat <<EOF | sudo tee /etc/systemd/system/record_audio.service
 [Unit]
 Description=Hydrophone Audio Recorder
@@ -117,9 +98,14 @@ Unit=record_audio.service
 WantedBy=timers.target
 EOF
 
+# === Step 10: Enable services (not starting them yet) ===
 sudo systemctl daemon-reload
+sudo systemctl enable reduce_latency.service
+sudo systemctl enable jack_server.service
 sudo systemctl enable record_audio.service
-sudo systemctl start record_audio.timer
-sudo systemctl enable --now record_audio.timer
+sudo systemctl enable record_audio.timer
 
-sudo reboot
+# === Final sync and instructions ===
+sync
+sleep 5
+echo "===[ Setup Phase 1 Complete. Please reboot the system manually. ]==="

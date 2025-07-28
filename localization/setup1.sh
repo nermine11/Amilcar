@@ -47,4 +47,4 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable get_location.timer
 
-echo "===[ Phase 1 Complete. Please reboot manually.== 
+echo "===[ Phase 1 Complete. Please reboot manually.== "
