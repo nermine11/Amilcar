@@ -108,7 +108,7 @@ Description=run jack server
 [Service]
 User=pi
 Group=audio
-ExecStart=/usr/bin/jackd -R -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p 2048 -n2 -i2 -o2
+ExecStart=/usr/bin/chrt -r 70 /usr/bin/jackd -R -P70 -t 2000 -d alsa -d hw:0 -r 44100 -p 2048 -n2 -i2 -o2
 Environment=JACK_NO_AUDIO_RESERVATION=1
 Restart=always
 RestartSec=2
