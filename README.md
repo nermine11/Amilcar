@@ -31,7 +31,7 @@ check ./localization for more details on the configuration
  so better use a cooling fan!
 - Sometimes we get an IO error and everything blocks because of the load on the rPi, 
 if you want a system that will stay all the time in the sea, look for other options than the rPi as it already requires many tweaking to record in real time,
--There will always be some jitter, meaning imperfect synchronization between the recordings from different Raspberry Pis (in our case, up to 25 ms). 
+-There will always be some jitter, meaning imperfect synchronization between the recordings from different Raspberry Pis (in our case, up to 18 ms). 
 This jitter cannot be corrected in software, it must be addressed through hardware-level synchronization.
 - We use WAV format for audio which can be heavy (1.2 GO an hour) so use a large SD Card, we chose WAV because we can inject in it directly the timestamps as cue points
 
