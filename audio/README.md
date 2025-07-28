@@ -12,6 +12,26 @@ We use the Aquarium H2dM hydrophone:
 
 https://www.aquarianaudio.com/h2d-hydrophone.html
 
+We use JACK for real time recording:
+"JACK (JACK Audio Connection Kit), often referred to as jackd, is a
+
+“system for handling real-time, low latency audio (and MIDI). It runs on GNU/Linux, Solaris, FreeBSD, OS X and Windows (and can be ported to other POSIX-conformant platforms). It can connect a number of different applications to an audio device, as well as allowing them to share audio between themselves. Its clients can run in their own processes (ie. as normal applications), or can they can run within the JACK server (ie. as a “plugin”). JACK also has support for distributing audio processing across a network, both fast & reliable LANs as well as slower, less reliable WANs.
+
+JACK was designed from the ground up for professional audio work, and its design focuses on two key areas: synchronous execution of all clients, and low latency operation.”3)"
+We record constantly since reboot after a timer of 30 minutes to give time to get GPS fix,
+we save the files each hour in a folder by day
+We use wav and inject the GPS timestamps and location each second
+To get the timestamps use: 
+```
+ffprobe -show_entries format_tags=comment filename.wav
+```
+Example:
+
+
+<img width="859" height="913" alt="image" src="https://github.com/user-attachments/assets/ae0080e9-c582-467e-9c72-6a80264220f3" />
+
+
+
 You will need an updated Linux kernel. You will need at least version 4.18.12. You can check this using the command uname
 ```
 # uname -a
