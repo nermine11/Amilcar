@@ -81,6 +81,7 @@ Group=audio
 LimitRTPRIO=infinity
 LimitMEMLOCK=infinity
 CPUAffinity=3
+TimeoutStopSec=30          # give 30s to shut down cleanly
 
 [Install]
 WantedBy=multi-user.target
@@ -102,7 +103,6 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable reduce_latency.service
 sudo systemctl enable jack_server.service
-sudo systemctl enable record_audio.service
 sudo systemctl enable record_audio.timer
 
 # === Final sync and instructions ===

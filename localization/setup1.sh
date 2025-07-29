@@ -21,11 +21,12 @@ After=gpsd.service
 Wants=gpsd.service
 
 [Service]
-ExecStart=/home/pi/Amilcar/localization/venv/bin/python /home/pi/Amilcar/localization/get_location.py
+ExecStart=/home/pi/Amilcar/localization/venv/bin/python /home/pi/Amilcar/localization/get_location_continously.py
 WorkingDirectory=/home/pi/Amilcar/localization
 Restart=always
 RestartSec=1
 User=pi
+TimeoutStopSec=30          # give 30s to shut down cleanly
 
 [Install]
 WantedBy=multi-user.target
